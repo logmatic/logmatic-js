@@ -82,8 +82,8 @@ You can also use all the following parameters using the right method:
 
 | Method        | Description           |  Example  |
 | ------------- | ------------- |  ----- |
-| setMetas(<object>) | add some meta attributes in final JSON | `logmatic.setMetas({"userId":"1234"})` |
-| setSendConsoleErrors(<exception_attr>) | fwd any error using "exception" as JSON attr | `logmatic.setSendConsoleErrors("exception");`|
-| setSendConsoleLogs(<level_attr>) | fwd any console log using "level" as JSON attr | `logmatic.setSendConsoleLogs("level")`|
-| setIPTracking(<ip_attr>) | resolve client IP and copy it @ "client.IP" | `logmatic.setIPTracking("client.IP")`|
-| setUserAgentTracking(<ua_attr) | resolve client UA and copy it @ "client.user-agent" | `logmatic.setUserAgentTracking("client.user-agent")`|
+| setMetas(<object>) | add some meta attributes in final JSON | `.setMetas({"userId":"1234"})` |
+| setSendConsoleErrors(<exception_attr>) | fwd any error using "exception" as JSON attr | `.setSendConsoleErrors("exception");`|
+| setSendConsoleLogs(<level_attr>) | fwd any console log using "level" as JSON attr | `.setSendConsoleLogs("level")`|
+| setIPTracking(<ip_attr>) | resolve client IP and copy it @ "client.IP" | `.setIPTracking("client.IP")`|
+| setUserAgentTracking(<ua_attr) | resolve client UA and copy it @ "client.user-agent" | `.setUserAgentTracking("client.user-agent")`|
