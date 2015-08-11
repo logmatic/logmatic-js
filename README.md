@@ -86,4 +86,4 @@ You can also use all the following parameters using the right method:
 | setSendConsoleErrors(<exception_attr>) | fwd any error using "exception" as JSON attr | `.setSendConsoleErrors("exception");`|
 | setSendConsoleLogs(<level_attr>) | fwd any console log using "level" as JSON attr | `.setSendConsoleLogs("level")`|
 | setIPTracking(<ip_attr>) | resolve client IP and copy it @ "client.IP" | `.setIPTracking("client.IP")`|
-| setUserAgentTracking(<ua_attr) | resolve client UA and copy it @ "client.user-agent" | `.setUserAgentTracking("client.user-agent")`|
+| setUserAgentTracking(<ua_attr>) | resolve client UA and copy it @ "client.user-agent" | `.setUserAgentTracking("client.user-agent")`|
