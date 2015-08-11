@@ -1,0 +1,27 @@
+{
+  "name": "logmatic-js",
+  "homepage": "http://logmatic.io",
+  "description": "Client-side JavaScript logging library for Logmatic.io",
+  "_source": "git://github.com/logmatic/logmatic-js.git",
+  "_target": "*",
+  "_originalSource": "logmatic-js",
+  "_direct": true,
+  "license": "MIT",
+  "version": "0.0.1",
+  "main": "src/logmatic.js",
+  "keywords": [
+    "logmatic-js",
+    "jslogger",
+    "logmatic"
+  ],
+  "authors": [
+    "Logmatic.io"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
