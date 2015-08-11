@@ -60,7 +60,7 @@ logmatic.log("Button clicked", {name: "My button name"});
 
 To clearly explain what happens here, in this exact situation where everything is configured as above the API POSTs the following JSON content to *Logmatic.io*'s API.:
 
-```js
+```json
 {
   "userId: "1234",
   "name": "My button name",
