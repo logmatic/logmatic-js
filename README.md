@@ -6,9 +6,9 @@ Client-side JavaScript logging library for Logmatic.io
 
 - Use the library as a logger. Everything is forwarded to Logmatic.io as JSON documents.
 - Metas and extra attributes
-- Forward every JavaScript errors
-- Forward JavaScript's console logs
-- Track real client IP address and user-agent
+- Forward every JavaScript errors (optional)
+- Forward JavaScript's console logs (optional)
+- Track real client IP address and user-agent (optional)
 - Small minified script of 2kb
 
 ## Quick Start
