@@ -69,12 +69,12 @@ Just don't forget to set your own API key.
 
 You must call the init method to configure the logger:
 ```
-logmatic.init("<your_api_key>");
+logmatic.init(<your_api_key>);
 ```
 
 There is only one method to send log events to *Logmatic.io*:
 ```
-logmatic.init("<message>","<context>");
+logmatic.log(<message>,<context>);
 ```
 
 You can also use all the following parameters using the right method:
