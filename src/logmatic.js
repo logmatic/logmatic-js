@@ -16,7 +16,7 @@
     _url = "https://api.logmatic.io/v1/input/"+key;
   }
 
-  var log = function(message, properties) {
+  var log = function(message, context) {
     if (!_url) {
       console.error("Please init Logmatic before pushing events"); return;
     }
@@ -28,11 +28,11 @@
         }
       }
     }
-    //Properties can override metas
-    if (properties) {
-      for (var key in properties) {
-        if (properties.hasOwnProperty(key)) {
-          payload[key] = properties[key];
+    //context can override metas
+    if (context) {
+      for (var key in context) {
+        if (context.hasOwnProperty(key)) {
+          payload[key] = context[key];
         }
       }
     }
