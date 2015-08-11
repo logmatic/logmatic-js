@@ -58,6 +58,20 @@ logmatic.log("Button clicked", {name: "My button name"});
 ...
 ```
 
+To clearly explain what happens here, in this exact situation where everything is configured as above the API POSTs the following JSON content to *Logmatic.io*'s API.:
+
+```js
+{
+  "userId: "1234",
+  "name": "My button name",
+  "message": "Button clicked",
+  "client" {
+    "IP" : "109.30.xx.xxx",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.130 Safari/537.36"
+  }
+}
+```
+
 ### Try the `test-client.html` page
 
 In `test/`, you'll find a test html page called `test-client.html` you can use to make some quick test.
