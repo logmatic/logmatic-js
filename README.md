@@ -33,10 +33,10 @@ You simply have to include the minified script and initialize it with your write
       //fwd any error using "exception" as JSON attr
       logmatic.setSendConsoleErrors("exception");
       //fwd any console log using "level" as JSON attr
-	    logmatic.setSendConsoleLogs("level");
-	    //resolve client IP and copy it @ "client.IP"
-	    logmatic.setIPTracking("client.IP");
-	    //resolve client UA and copy it @ "client.user-agent"
+      logmatic.setSendConsoleLogs("level");
+      //resolve client IP and copy it @ "client.IP"
+      logmatic.setIPTracking("client.IP");
+      //resolve client UA and copy it @ "client.user-agent"
       logmatic.setUserAgentTracking("client.user-agent");
 	</script>
     ...
