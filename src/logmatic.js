@@ -21,14 +21,6 @@
       console.error("Please init Logmatic before pushing events"); return;
     }
     var payload = {message: message};
-    if (_metas) {
-      for (var key in _metas) {
-        if (_metas.hasOwnProperty(key)) {
-          payload[key] = _metas[key];
-        }
-      }
-    }
-    //context can override metas
     if (context) {
       for (var key in context) {
         if (context.hasOwnProperty(key)) {
@@ -40,6 +32,16 @@
   }
 
   var post = function(data, successFn, errorFn) {
+
+    //Set metas
+    if (_metas) {
+      for (var key in _metas) {
+        if (_metas.hasOwnProperty(key)) {
+          data[key] = _metas[key];
+        }
+      }
+    }
+
     var request = new XMLHttpRequest();
     request.open('POST', _url, true);
     request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
