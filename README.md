@@ -37,6 +37,8 @@ You simply have to include the minified script and initialize it with your write
       logmatic.setIPTracking("client.IP");
       //resolve client UA and copy it @ "client.user-agent"
       logmatic.setUserAgentTracking("client.user-agent");
+      // resolve URL and copy it @ "url"
+      logmatic.setURLTracking("url");
 	</script>
     ...
   </head>
@@ -65,6 +67,7 @@ To clearly explain what happens here, in this exact situation where everything i
   "userId: "1234",
   "name": "My button name",
   "message": "Button clicked",
+  "url": "...",
   "client" {
     "IP" : "109.30.xx.xxx",
     "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.130 Safari/537.36"
@@ -96,7 +99,8 @@ You can also use all the following parameters using the right method:
 | Method        | Description           |  Example  |
 | ------------- | ------------- |  ----- |
 | setMetas(<object>) | add some meta attributes in final JSON | `.setMetas({"userId":"1234"})` |
-| setSendConsoleErrors(<exception_attr>) | fwd any error using "exception" as JSON attr | `.setSendConsoleErrors("exception");`|
-| setSendConsoleLogs(<level_attr>) | fwd any console log using "level" as JSON attr | `.setSendConsoleLogs("level")`|
-| setIPTracking(<ip_attr>) | resolve client IP and copy it @ "client.IP" | `.setIPTracking("client.IP")`|
-| setUserAgentTracking(<ua_attr>) | resolve client UA and copy it @ "client.user-agent" | `.setUserAgentTracking("client.user-agent")`|
+| setSendConsoleErrors(<exception_attr>) | fwd any error using exception_attr as JSON attr | `.setSendConsoleErrors("exception");`|
+| setSendConsoleLogs(<level_attr>) | fwd any console log using level_attr" as JSON attr | `.setSendConsoleLogs("level")`|
+| setIPTracking(<ip_attr>) | resolve client IP and copy it @ ip_attr | `.setIPTracking("client.IP")`|
+| setUserAgentTracking(<ua_attr>) | resolve client UA and copy it @ ua_attr | `.setUserAgentTracking("client.user-agent")`|
+| setURLTracking(<url_attr>) | resolve URL and copy it @ url_attr | `.setURLTracking("url")`|

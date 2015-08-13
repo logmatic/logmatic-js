@@ -12,6 +12,7 @@
       logmatic.setSendConsoleLogs("level");// OPTIONAL fwd any console log using "level" as JSON attr
       logmatic.setIPTracking("client.IP");// OPTIONAL resolve client IP and copy it @ "client.IP"
       logmatic.setUserAgentTracking("client.user-agent");// OPTIONAL OPTIONAL resolve client IP and copy it @ "client.IP"
+      logmatic.setURLTracking("url");// OPTIONAL resolve URL and copy it @ "url"
 
       function btnClicked() {
         logmatic.log("Button clicked", {name: "My button name"})

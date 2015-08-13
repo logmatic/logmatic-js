@@ -12,6 +12,7 @@
   var _metas;
   var _ipTrackingAttr;
   var _uaTrackingAttr;
+  var _urlTrackingAttr;
 
   var init = function(key) {
     _url = "https://api.logmatic.io/v1/input/"+key;
@@ -42,16 +43,20 @@
         }
       }
     }
+    //URL tracking
+    if(_urlTrackingAttr){
+      data[_urlTrackingAttr] = window.location.href;
+    }
 
     var request = new XMLHttpRequest();
     request.open('POST', _url, true);
     request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 
-    //Enable IP tracking
+    //IP tracking
     if(_ipTrackingAttr){
       request.setRequestHeader('X-Logmatic-Add-IP', _ipTrackingAttr);
     }
-    //Enable UserAgent tracking
+    //UserAgent tracking
     if(_uaTrackingAttr){
       request.setRequestHeader('X-Logmatic-Add-UserAgent', _uaTrackingAttr);
     }
@@ -85,7 +90,7 @@
     console.info = function (message) {
         var props = {};
         if(consoleLevelAttribute){
-          props[consoleLevelAttribute]="log";
+          props[consoleLevelAttribute]="info";
         }
         log(message,props);
         oldInfo.apply(console, arguments);
@@ -139,6 +144,10 @@
     }
   }
 
+  var setURLTracking = function(urlTrackingAttr) {
+    _urlTrackingAttr = urlTrackingAttr;
+  }
+
   var setIPTracking = function(ipTrackingAttr) {
     _ipTrackingAttr = ipTrackingAttr;
   }
@@ -154,6 +163,7 @@
     setSendConsoleErrors: setSendConsoleErrors,
     setSendConsoleLogs: setSendConsoleLogs,
     setIPTracking: setIPTracking,
-    setUserAgentTracking: setUserAgentTracking
+    setUserAgentTracking: setUserAgentTracking,
+    setURLTracking: setURLTracking
   };
 }));
