@@ -9,7 +9,7 @@ Client-side JavaScript logging library for Logmatic.io
 - Forward every JavaScript errors (optional)
 - Forward JavaScript's console logs (optional)
 - Track real client IP address and user-agent (optional)
-- Small minified script of 2kb
+- Small minified script < 2kb
 
 ## Quick Start
 
@@ -23,22 +23,22 @@ You simply have to include the minified script and initialize it with your write
     <title>Example to send logs to Logmatic.io</title>
     <script type="text/javascript" src="../src/logmatic.min.js"></script>
     <script>
-      //Set your API key
-      logmatic.init("<your_api_key>")
+      // Set your API key
+      logmatic.init('<your_api_key>');
 
-      //OPTIONAL init methods
-      //add some meta attributes in final JSON
-      logmatic.setMetas({"userId":"1234"}) entries
-      //fwd any error using "exception" as JSON attr
-      logmatic.setSendConsoleErrors("exception");
-      //fwd any console log using "level" as JSON attr
-      logmatic.setSendConsoleLogs("level");
-      //resolve client IP and copy it @ "client.IP"
-      logmatic.setIPTracking("client.IP");
-      //resolve client UA and copy it @ "client.user-agent"
-      logmatic.setUserAgentTracking("client.user-agent");
-      // resolve URL and copy it @ "url"
-      logmatic.setURLTracking("url");
+      // OPTIONAL init methods
+      // add some meta attributes in final JSON
+      logmatic.setMetas({'userId': '1234'});
+      // fwd any error using 'exception' as JSON attr
+      logmatic.setSendConsoleErrors('exception');
+      // fwd any console log using 'level' as JSON attr
+      logmatic.setSendConsoleLogs('level');
+      // resolve client IP and copy it @ 'client.IP'
+      logmatic.setIPTracking('client.IP');
+      // resolve client UA and copy it @ 'client.user-agent'
+      logmatic.setUserAgentTracking('client.user-agent');
+      // resolve URL and copy it @ 'url'
+      logmatic.setURLTracking('url');
 	</script>
     ...
   </head>
@@ -54,7 +54,7 @@ To log some events you simply there is simple an unique method called *log(<mess
 ...
 <script>
 ...
-logmatic.log("Button clicked", {name: "My button name"});
+logmatic.log('Button clicked', { name: 'My button name' });
 ...
 </script>
 ...
@@ -98,9 +98,9 @@ You can also use all the following parameters using the right method:
 
 | Method        | Description           |  Example  |
 | ------------- | ------------- |  ----- |
-| setMetas(<object>) | add some meta attributes in final JSON | `.setMetas({"userId":"1234"})` |
-| setSendConsoleErrors(<exception_attr>) | fwd any error using exception_attr as JSON attr | `.setSendConsoleErrors("exception");`|
-| setSendConsoleLogs(<level_attr>) | fwd any console log using level_attr" as JSON attr | `.setSendConsoleLogs("level")`|
-| setIPTracking(<ip_attr>) | resolve client IP and copy it @ ip_attr | `.setIPTracking("client.IP")`|
-| setUserAgentTracking(<ua_attr>) | resolve client UA and copy it @ ua_attr | `.setUserAgentTracking("client.user-agent")`|
-| setURLTracking(<url_attr>) | resolve URL and copy it @ url_attr | `.setURLTracking("url")`|
+| setMetas(<object>) | add some meta attributes in final JSON | `.setMetas({ 'userId': '1234' })` |
+| setSendConsoleErrors(<exception_attr>) | fwd any error using exception_attr as JSON attr | `.setSendConsoleErrors('exception');`|
+| setSendConsoleLogs(<level_attr>) | fwd any console log using level_attr" as JSON attr | `.setSendConsoleLogs('level')`|
+| setIPTracking(<ip_attr>) | resolve client IP and copy it @ ip_attr | `.setIPTracking('client.IP')`|
+| setUserAgentTracking(<ua_attr>) | resolve client UA and copy it @ ua_attr | `.setUserAgentTracking('client.user-agent')`|
+| setURLTracking(<url_attr>) | resolve URL and copy it @ url_attr | `.setURLTracking('url')`|

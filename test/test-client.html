@@ -3,29 +3,32 @@
     <title>Example to send logs to Logmatic.io</title>
     <script type="text/javascript" src="../src/logmatic.min.js"></script>
     <script>
-      //Set your API key
-      logmatic.init("<your_api_key>")
+      // Set your API key
+      logmatic.init('<your_api_key>');
 
-      //Optional init methods
-      logmatic.setMetas({"userId":"1234"}) // OPTIONAL add some meta attributes in final JSON entries
-      logmatic.setSendConsoleErrors("exception");// OPTIONAL fwd any error using "exception" as JSON attr
-      logmatic.setSendConsoleLogs("level");// OPTIONAL fwd any console log using "level" as JSON attr
-      logmatic.setIPTracking("client.IP");// OPTIONAL resolve client IP and copy it @ "client.IP"
-      logmatic.setUserAgentTracking("client.user-agent");// OPTIONAL OPTIONAL resolve client IP and copy it @ "client.IP"
-      logmatic.setURLTracking("url");// OPTIONAL resolve URL and copy it @ "url"
+      // Optional init methods
+      logmatic.setMetas({ 'userId': '1234'}); // OPTIONAL add some meta attributes in final JSON entries
+      logmatic.setSendConsoleErrors('exception'); // OPTIONAL fwd any error using 'exception' as JSON attr
+      logmatic.setSendConsoleLogs('level'); // OPTIONAL fwd any console log using 'level' as JSON attr
+      logmatic.setIPTracking('client.IP'); // OPTIONAL resolve client IP and copy it @ 'client.IP'
+      logmatic.setUserAgentTracking('client.user-agent'); // OPTIONAL OPTIONAL resolve client IP and copy it @ 'client.user-agent'
+      logmatic.setURLTracking('url'); // OPTIONAL resolve URL and copy it @ 'url'
 
-      function btnClicked() {
-        logmatic.log("Button clicked", {name: "My button name"})
+      function btnClicked () {
+        logmatic.log('Button clicked', { name: 'My button name' });
       }
-      function fireError() {
-        throw "This is a fake error!!";
+
+      function fireError () {
+        throw 'This is a fake error!!';
       }
-      function consoleLog() {
-        console.log("This is a fake console.log!!");
-        console.trace("This is a fake console.trace!!");
-        console.error("This is a fake console.error!!");
-        console.info("This is a fake console.info!!");
-        console.warn("This is a fake console.warn!!");
+
+      function consoleLog () {
+        console.log('test', null, 0, true, function () { return null; });
+        console.log('This is a fake console.log!!');
+        console.trace('This is a fake console.trace!!');
+        console.error('This is a fake console.error!!');
+        console.info('This is a fake console.info!!');
+        console.warn('This is a fake console.warn!!');
       }
     </script>
   </head>
