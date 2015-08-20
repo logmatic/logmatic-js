@@ -7,154 +7,147 @@
   } else {
     root.logmatic = factory();
   }
-}(this, function () {
+} (this, function () {
   var _url;
   var _metas;
   var _ipTrackingAttr;
   var _uaTrackingAttr;
   var _urlTrackingAttr;
 
-  var init = function(key) {
-    _url = "https://api.logmatic.io/v1/input/"+key;
+  function assign (fromObject, toObject) {
+    if (fromObject) {
+      for (var key in fromObject) {
+        if (fromObject.hasOwnProperty(key)) {
+          toObject[key] = fromObject[key];
+        }
+      }
+    }
   }
 
-  var log = function(message, context) {
+  var init = function (key) {
+    _url = 'https://api.logmatic.io/v1/input/' + key;
+  };
+
+  var log = function (message, context) {
     if (!_url) {
-      console.error("Please init Logmatic before pushing events"); return;
+      console.error('Please init Logmatic before pushing events');
+      return;
     }
-    var payload = {message: message};
-    if (context) {
-      for (var key in context) {
-        if (context.hasOwnProperty(key)) {
-          payload[key] = context[key];
-        }
-      }
-    }
+    var payload = {
+      message: message
+    };
+    assign(context, payload);
     post(payload);
-  }
+  };
 
-  var post = function(data, successFn, errorFn) {
+  var post = function (data, successFn, errorFn) {
+    // Set metas
+    assign(_metas, data);
 
-    //Set metas
-    if (_metas) {
-      for (var key in _metas) {
-        if (_metas.hasOwnProperty(key)) {
-          data[key] = _metas[key];
-        }
-      }
-    }
-    //URL tracking
-    if(_urlTrackingAttr){
+    // URL tracking
+    if (_urlTrackingAttr) {
       data[_urlTrackingAttr] = window.location.href;
     }
 
-    var request = new XMLHttpRequest();
+    var request;
+    if (typeof (XDomainRequest) !== 'undefined') { // IE8/9
+      request = new XDomainRequest();
+    }
+    request = new XMLHttpRequest();
     request.open('POST', _url, true);
-    request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 
-    //IP tracking
-    if(_ipTrackingAttr){
-      request.setRequestHeader('X-Logmatic-Add-IP', _ipTrackingAttr);
-    }
-    //UserAgent tracking
-    if(_uaTrackingAttr){
-      request.setRequestHeader('X-Logmatic-Add-UserAgent', _uaTrackingAttr);
+    if (request.constructor === XMLHttpRequest) {
+      request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+      // IP tracking
+      if (_ipTrackingAttr) {
+        request.setRequestHeader('X-Logmatic-Add-IP', _ipTrackingAttr);
+      }
+      // UserAgent tracking
+      if (_uaTrackingAttr) {
+        request.setRequestHeader('X-Logmatic-Add-UserAgent', _uaTrackingAttr);
+      }
     }
 
-    request.onload = function() {
-      if (successFn) successFn(request);
+    request.onload = function () {
+      if (successFn) {
+        successFn(request);
+      }
     };
 
-    request.onerror = function() {
-      if (errorFn) errorFn(request);
+    request.onerror = function () {
+      if (errorFn) {
+        errorFn(request);
+      }
     };
 
     request.send(JSON.stringify(data));
-  }
+  };
 
-  var setMetas = function(metas) {
+  var setMetas = function (metas) {
     _metas = metas;
+  };
+
+  function setSendConsoleLogs (consoleLevelAttribute) {
+    if (!console) {
+      return;
+    }
+    [{ f: 'log', l: 'info' }, { f: 'info' }, { f: 'trace' }, { f: 'warn' }, { f: 'error' }].forEach(function (decl) {
+      var funName = decl.f;
+      var level = decl.l || decl.f;
+      var oldFun = console[funName];
+      console[funName] = function () {
+        var props = null;
+        // Set the level if requested
+        if (consoleLevelAttribute) {
+          props = {};
+          props[consoleLevelAttribute] = level;
+        }
+        // Now we build the message and log it
+        var message = Array.prototype.slice.call(arguments).map(function (a) {
+            return typeof (a) === 'object' ? JSON.stringify(a) : String(a);
+        }).join(' ');
+        log(message, props);
+        // Fwd call to old impl.
+        if (oldFun.apply) { // Most browsers
+          oldFun.apply(console, arguments);
+        } else { // IE
+          oldFun(message);
+        }
+      };
+    });
   }
 
-  function setSendConsoleLogs(consoleLevelAttribute) {
-    var oldLog = console.log;
-    console.log = function (message) {
-        var props = {};
-        if(consoleLevelAttribute){
-          props[consoleLevelAttribute]="info";
-        }
-        log(message,props);
-        oldLog.apply(console, arguments);
-    };
-    var oldInfo = console.info;
-    console.info = function (message) {
-        var props = {};
-        if(consoleLevelAttribute){
-          props[consoleLevelAttribute]="info";
-        }
-        log(message,props);
-        oldInfo.apply(console, arguments);
-    };
-    var oldTrace = console.trace;
-    console.trace = function (message) {
-        var props = {};
-        if(consoleLevelAttribute){
-          props[consoleLevelAttribute]="trace";
-        }
-        log(message,props);
-        oldTrace.apply(console, arguments);
-    };
-    var oldWarn = console.warn;
-    console.warn = function (message) {
-        var props = {};
-        if(consoleLevelAttribute){
-          props[consoleLevelAttribute]="warn";
-        }
-        log(message,props);
-        oldWarn.apply(console, arguments);
-    };
-    var oldError = console.error;
-    console.error = function (message) {
-        var props = {};
-        if(consoleLevelAttribute){
-          props[consoleLevelAttribute]="error";
-        }
-        log(message,props);
-        oldError.apply(console, arguments);
-    };
-  }
-
-  function setSendConsoleErrors(errorAttribute) {
-    if(errorAttribute){
+  function setSendConsoleErrors (errorAttribute) {
+    if (errorAttribute) {
       var oldhandler = window.onerror;
-      window.onerror = function (message, url, line, col){
+      window.onerror = function (message, url, line, col) {
         var errorProperties = {};
         errorProperties[errorAttribute] = {
-          type: "JSException",
+          type: 'JSException',
           url: url,
           line: line,
           col: col,
         };
-        log(message,errorProperties);
-
-        if (oldhandler && typeof oldhandler === 'function') {
+        log(message, errorProperties);
+        if (oldhandler && (typeof(oldhandler) === 'function')) {
           oldhandler.apply(window, arguments);
         }
       };
     }
   }
 
-  var setURLTracking = function(urlTrackingAttr) {
+  var setURLTracking = function (urlTrackingAttr) {
     _urlTrackingAttr = urlTrackingAttr;
-  }
+  };
 
-  var setIPTracking = function(ipTrackingAttr) {
+  var setIPTracking = function (ipTrackingAttr) {
     _ipTrackingAttr = ipTrackingAttr;
-  }
+  };
 
-  var setUserAgentTracking = function(uaTrackingAttr) {
+  var setUserAgentTracking = function (uaTrackingAttr) {
     _uaTrackingAttr = uaTrackingAttr;
-  }
+  };
 
   return {
     init: init,
