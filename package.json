@@ -1,6 +1,6 @@
 {
   "name": "logmatic-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Client-side JavaScript logging library for Logmatic.io",
   "main": "product/logmatic.js",
   "repository": {
