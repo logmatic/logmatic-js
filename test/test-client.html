@@ -4,14 +4,14 @@
     <script type="text/javascript" src="../src/logmatic.min.js"></script>
     <script>
       // Set your API key
-      logmatic.init('iGNxbieiR8uKGMJogoZYWA');
+      logmatic.init('XXXXX');
 
       // Optional init methods
       logmatic.setMetas({ 'userId': '1234'}); // OPTIONAL add some meta attributes in final JSON entries
       logmatic.setSendConsoleErrors('exception'); // OPTIONAL fwd any error using 'exception' as JSON attr
       logmatic.setSendConsoleLogs('level'); // OPTIONAL fwd any console log using 'level' as JSON attr
       logmatic.setIPTracking('client.IP'); // OPTIONAL resolve client IP and copy it @ 'client.IP'
-      logmatic.setUserAgentTracking('client.user-agent'); // OPTIONAL OPTIONAL resolve client IP and copy it @ 'client.user-agent'
+      logmatic.setUserAgentTracking('client.user-agent'); // OPTIONAL resolve client IP and copy it @ 'client.user-agent'
       logmatic.setURLTracking('url'); // OPTIONAL resolve URL and copy it @ 'url'
 
       function btnClicked () {

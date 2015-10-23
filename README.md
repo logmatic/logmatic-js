@@ -9,6 +9,7 @@ Client-side JavaScript logging library for Logmatic.io
 - Forward every JavaScript errors (optional)
 - Forward JavaScript's console logs (optional)
 - Track real client IP address and user-agent (optional)
+- Automatic bulk posts (optional)
 - Small minified script < 2kb
 
 ## Quick Start
@@ -104,3 +105,7 @@ You can also use all the following parameters using the right method:
 | setIPTracking(<ip_attr>) | resolve client IP and copy it @ ip_attr | `.setIPTracking('client.IP')`|
 | setUserAgentTracking(<ua_attr>) | resolve client UA and copy it @ ua_attr | `.setUserAgentTracking('client.user-agent')`|
 | setURLTracking(<url_attr>) | resolve URL and copy it @ url_attr | `.setURLTracking('url')`|
+| setBulkOptions({ lingerMs: <duration in ms>, maxPostCount: <count>, maxWaitingCount: <count> }) | Options to configure the bulking behavior. Bulking limits the number of requests emitted. | `.setBulkOptions({ lingerMs: 500, maxPostCount: 10, maxWaitingCount: -1 })`|
+| | lingerMs: A delay used to give a change to bulk a few line of logs together |
+| | maxPostCount: How many log lines should each post send at most (-1 no limit) |
+| | maxWaitingCount: How many log lines can be queued before dropping some (-1 no limit) |

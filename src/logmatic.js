@@ -14,6 +14,14 @@
   var _uaTrackingAttr;
   var _urlTrackingAttr;
 
+  var _bulkLingerMs = 500;
+  var _bulkMaxPostCount = 10;
+  var _bulkMaxWaitingCount = -1;
+
+  var _queue = null;
+  var _posting = false;
+  var _scheduled = null;
+
   function assign (fromObject, toObject) {
     if (fromObject) {
       for (var key in fromObject) {
@@ -28,6 +36,19 @@
     _url = 'https://api.logmatic.io/v1/input/' + key;
   };
 
+  var setBulkOptions = function (opts) {
+    opts = opts || {};
+    if (opts.lingerMs != null) {
+      _bulkLingerMs = opts.lingerMs;
+    }
+    if (opts.maxPostCount != null) {
+      _bulkMaxPostCount = opts.maxPostCount;
+    }
+    if (opts.maxWaitingCount != null) {
+      _bulkMaxWaitingCount = opts.maxWaitingCount;
+    }
+  };
+
   var log = function (message, context) {
     if (!_url) {
       console.error('Please init Logmatic before pushing events');
@@ -37,17 +58,53 @@
       message: message
     };
     assign(context, payload);
-    post(payload);
+    queue(payload);
   };
 
-  var post = function (data, successFn, errorFn) {
+  var queue = function (payload) {
     // Set metas
-    assign(_metas, data);
+    assign(_metas, payload);
 
     // URL tracking
     if (_urlTrackingAttr) {
-      data[_urlTrackingAttr] = window.location.href;
+      payload[_urlTrackingAttr] = window.location.href;
     }
+
+    _queue = _queue || [];
+    _queue.push(JSON.stringify(payload));
+
+    // Check if we are growing above the max waiting count (if any)
+    if (_bulkMaxWaitingCount >= 0 && _queue.length > _bulkMaxWaitingCount) {
+      _queue.shift();
+    }
+
+    trypost(true);
+  };
+
+  var trypost = function (linger) {
+    // See if we can post now
+    if (_posting || _scheduled || !(_queue && _queue.length)) {
+      return;
+    }
+
+    if (linger && _bulkLingerMs >= 0) {
+      _scheduled = setTimeout(post, _bulkLingerMs);
+    } else {
+      post();
+    }
+  };
+
+  var post = function () {
+    var data;
+    if (_bulkMaxPostCount > 0 && _queue.length > _bulkMaxPostCount) {
+      data = '[' + _queue.splice(0, _bulkMaxPostCount).join(',') + ']';
+    } else {
+      data = _queue.length > 1 ? '[' + _queue.join(',') + ']' : _queue[0];
+      _queue = null;
+    }
+
+    _scheduled = null;
+    _posting = true;
 
     var request;
     if (typeof (XDomainRequest) !== 'undefined') { // IE8/9
@@ -70,18 +127,16 @@
     }
 
     request.onload = function () {
-      if (successFn) {
-        successFn(request);
-      }
+      _posting = false;
+      trypost(false);
     };
 
     request.onerror = function () {
-      if (errorFn) {
-        errorFn(request);
-      }
+      _posting = false;
+      trypost(false);
     };
 
-    request.send(JSON.stringify(data));
+    request.send(data);
   };
 
   var setMetas = function (metas) {
@@ -157,6 +212,7 @@
     setSendConsoleLogs: setSendConsoleLogs,
     setIPTracking: setIPTracking,
     setUserAgentTracking: setUserAgentTracking,
-    setURLTracking: setURLTracking
+    setURLTracking: setURLTracking,
+    setBulkOptions: setBulkOptions
   };
 }));
