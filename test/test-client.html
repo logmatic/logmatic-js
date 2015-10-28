@@ -4,7 +4,7 @@
     <script type="text/javascript" src="../src/logmatic.min.js"></script>
     <script>
       // Set your API key
-      logmatic.init('XXXXX');
+      logmatic.init('XXXX');
 
       // Optional init methods
       logmatic.setMetas({ 'userId': '1234'}); // OPTIONAL add some meta attributes in final JSON entries
@@ -13,6 +13,7 @@
       logmatic.setIPTracking('client.IP'); // OPTIONAL resolve client IP and copy it @ 'client.IP'
       logmatic.setUserAgentTracking('client.user-agent'); // OPTIONAL resolve client IP and copy it @ 'client.user-agent'
       logmatic.setURLTracking('url'); // OPTIONAL resolve URL and copy it @ 'url'
+      logmatic.setBulkOptions({ lingerMs: 500, maxPostCount: 10, maxWaitingCount: -1 }) //Default setting - OPTIONAL modifications allowed
 
       function btnClicked () {
         logmatic.log('Button clicked', { name: 'My button name' });

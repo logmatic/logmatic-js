@@ -9,7 +9,7 @@ Client-side JavaScript logging library for Logmatic.io
 - Forward every JavaScript errors (optional)
 - Forward JavaScript's console logs (optional)
 - Track real client IP address and user-agent (optional)
-- Automatic bulk posts (optional)
+- Automatic bulk posts (default to 500ms linger delay and 10 messages max per POST)
 - Small minified script < 2kb
 
 ## Quick Start
@@ -40,6 +40,8 @@ You simply have to include the minified script and initialize it with your write
       logmatic.setUserAgentTracking('client.user-agent');
       // resolve URL and copy it @ 'url'
       logmatic.setURLTracking('url');
+      // Default bulking setting - OPTIONAL modifications allowed
+      logmatic.setBulkOptions({ lingerMs: 500, maxPostCount: 10, maxWaitingCount: -1 })
 	</script>
     ...
   </head>

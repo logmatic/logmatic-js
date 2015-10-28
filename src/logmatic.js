@@ -14,6 +14,7 @@
   var _uaTrackingAttr;
   var _urlTrackingAttr;
 
+  //Bulk default options
   var _bulkLingerMs = 500;
   var _bulkMaxPostCount = 10;
   var _bulkMaxWaitingCount = -1;
