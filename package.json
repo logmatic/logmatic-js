@@ -2,7 +2,7 @@
   "name": "logmatic-js",
   "version": "0.0.7",
   "description": "Client-side JavaScript logging library for Logmatic.io",
-  "main": "product/logmatic.js",
+  "main": "src/logmatic.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/logmatic/logmatic-js"
