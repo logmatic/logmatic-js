@@ -49,6 +49,22 @@ You simply have to include the minified script and initialize it with your write
 </html>
 ```
 
+Or using npm:
+
+    npm install --save logmatic/logmatic-js#master
+
+```javascript
+// commonjs
+var logmatic = require('logmatic-js');
+// ES2015
+import logmatic from 'logmatic-js';
+
+// Set your API key
+logmatic.init('<your_api_key>');
+// ...
+// same as before
+```
+
 ### Log some events
 
 To log some events you simply there is simple an unique method called *log(<message>,<context>)*. The message is a piece of text, the context is an object that you want to associate to the message.
