@@ -193,6 +193,56 @@
     }
   }
 
+  function doWhileIsAlive(step, delay, cb) {
+    var isAlive = true;
+    var queuedTime = 0;
+
+    // These listeners come from http://stackoverflow.com/a/24989958
+    window.onload = resetAliveTimer;
+    window.onmousemove = resetAliveTimer;
+    window.onmousedown = resetAliveTimer; // catches touchscreen presses
+    window.onclick = resetAliveTimer;     // catches touchpad clicks
+    window.onscroll = resetAliveTimer;    // catches scrolling with arrow keys
+    window.onkeypress = resetAliveTimer;
+
+    // This sets `isAlive` to false if user did not do anything during `step` ms
+    var timer;
+    function resetAliveTimer() {
+      window.clearTimeout(timer);
+      isAlive = true;
+      timer = window.setTimeout(function () {
+        isAlive = false;
+      }, step);
+    }
+
+    // This interval will increment `queue` value by `step` each `step`
+    window.setInterval(function() {
+      queuedTime = isAlive?step+queuedTime:queuedTime;
+    }, step)
+
+    // This interval will send `queue` value each `delay`
+    window.setInterval(function() {
+      if (queuedTime>0) {
+        cb(queuedTime);
+        queuedTime = 0;
+      }
+    }, delay)
+  }
+
+  var timeTrack = function (step, delay, context, message) {
+    step = step || 20*1000; // 20s
+    delay = delay || 5*60*1000; // 5min
+    context = context || {};
+    message = message || "Heart beat";
+
+    doWhileIsAlive(step, delay, function(queuedTime) {
+      var payload = {};
+      assign(context, payload);
+      payload.duration = queuedTime;
+      log(message, payload)
+    });
+  }
+
   var setURLTracking = function (urlTrackingAttr) {
     _urlTrackingAttr = urlTrackingAttr;
   };
@@ -208,6 +258,7 @@
   return {
     init: init,
     log: log,
+    timeTrack: timeTrack,
     setMetas: setMetas,
     setSendConsoleErrors: setSendConsoleErrors,
     setSendConsoleLogs: setSendConsoleLogs,
