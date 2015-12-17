@@ -13,6 +13,7 @@
   var _ipTrackingAttr;
   var _uaTrackingAttr;
   var _urlTrackingAttr;
+  var _levelAttr = "severity";
 
   //Bulk default options
   var _bulkLingerMs = 500;
@@ -58,6 +59,9 @@
     var payload = {
       message: message
     };
+    if (_levelAttr) {
+      payload[_levelAttr] = "info";
+    }
     assign(context, payload);
     queue(payload);
   };
@@ -145,6 +149,9 @@
   };
 
   function setSendConsoleLogs (consoleLevelAttribute) {
+    if(consoleLevelAttribute){
+      _levelAttr = consoleLevelAttribute;
+    }
     if (!console) {
       return;
     }
@@ -155,9 +162,9 @@
       console[funName] = function () {
         var props = null;
         // Set the level if requested
-        if (consoleLevelAttribute) {
+        if (_levelAttr) {
           props = {};
-          props[consoleLevelAttribute] = level;
+          props[_levelAttr] = level;
         }
         // Now we build the message and log it
         var message = Array.prototype.slice.call(arguments).map(function (a) {
@@ -183,8 +190,13 @@
           type: 'JSException',
           url: url,
           line: line,
-          col: col,
+          col: col
         };
+
+        if (_levelAttr) {
+          errorProperties[_levelAttr] = "error";
+        }
+
         log(message, errorProperties);
         if (oldhandler && (typeof(oldhandler) === 'function')) {
           oldhandler.apply(window, arguments);
