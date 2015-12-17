@@ -117,13 +117,14 @@ You can also use all the following parameters using the right method:
 
 | Method        | Description           |  Example  |
 | ------------- | ------------- |  ----- |
-| setMetas(<object>) | add some meta attributes in final JSON | `.setMetas({ 'userId': '1234' })` |
-| setSendConsoleErrors(<exception_attr>) | fwd any error using exception_attr as JSON attr | `.setSendConsoleErrors('exception');`|
-| setSendConsoleLogs(<level_attr>) | fwd any console log using level_attr" as JSON attr | `.setSendConsoleLogs('level')`|
-| setIPTracking(<ip_attr>) | resolve client IP and copy it @ ip_attr | `.setIPTracking('client.IP')`|
-| setUserAgentTracking(<ua_attr>) | resolve client UA and copy it @ ua_attr | `.setUserAgentTracking('client.user-agent')`|
-| setURLTracking(<url_attr>) | resolve URL and copy it @ url_attr | `.setURLTracking('url')`|
-| setBulkOptions({ lingerMs: <duration in ms>, maxPostCount: <count>, maxWaitingCount: <count> }) | Options to configure the bulking behavior. Bulking limits the number of requests emitted. | `.setBulkOptions({ lingerMs: 500, maxPostCount: 10, maxWaitingCount: -1 })`|
+| setMetas(&lt;object&gt;) | add some meta attributes in final JSON | `.setMetas({ 'userId': '1234' })` |
+| setSendConsoleErrors(&lt;exception_attr&gt;, {addStrackTrace: false}) | fwd any error using exception_attr as JSON attr | `.setSendConsoleErrors('exception', { addStrackTrace: true});`|
+| | addStrackTrace: Add the stack trace associated with the error |
+| setSendConsoleLogs(&lt;level_attr&gt;) | fwd any console log using level_attr" as JSON attr | `.setSendConsoleLogs('level')`|
+| setIPTracking(&lt;ip_attr&gt;) | resolve client IP and copy it @ ip_attr | `.setIPTracking('client.IP')`|
+| setUserAgentTracking(&lt;ua_attr&gt;) | resolve client UA and copy it @ ua_attr | `.setUserAgentTracking('client.user-agent')`|
+| setURLTracking(&lt;url_attr&gt;) | resolve URL and copy it @ url_attr | `.setURLTracking('url')`|
+| setBulkOptions({ lingerMs: &lt;duration in ms&gt;, maxPostCount: &lt;count&gt;, maxWaitingCount: &lt;count&gt; }) | Options to configure the bulking behavior. Bulking limits the number of requests emitted. | `.setBulkOptions({ lingerMs: 500, maxPostCount: 10, maxWaitingCount: -1 })`|
 | | lingerMs: A delay used to give a change to bulk a few line of logs together |
 | | maxPostCount: How many log lines should each post send at most (-1 no limit) |
 | | maxWaitingCount: How many log lines can be queued before dropping some (-1 no limit) |

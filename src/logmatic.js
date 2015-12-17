@@ -174,17 +174,20 @@
     });
   }
 
-  function setSendConsoleErrors (errorAttribute) {
+  function setSendConsoleErrors (errorAttribute, options) {
     if (errorAttribute) {
       var oldhandler = window.onerror;
-      window.onerror = function (message, url, line, col) {
+      window.onerror = function (message, url, line, col, Error) {
         var errorProperties = {};
         errorProperties[errorAttribute] = {
           type: 'JSException',
           url: url,
           line: line,
-          col: col,
+          col: col
         };
+        if (options && options.addStackTrace) {
+            errorProperties[errorAttribute]['stack'] = Error.stack
+        }
         log(message, errorProperties);
         if (oldhandler && (typeof(oldhandler) === 'function')) {
           oldhandler.apply(window, arguments);
