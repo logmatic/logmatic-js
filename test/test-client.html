@@ -9,7 +9,7 @@
 
       // Optional init methods
       logmatic.setMetas({ 'userId': '1234',"hostname":"front","appname":"myapp"}); // OPTIONAL add some meta attributes in final JSON entries
-      logmatic.setSendErrors('exception'); // OPTIONAL fwd any error using 'exception' as JSON attr
+      logmatic.setSendErrors('error'); // OPTIONAL fwd any error using 'exception' as JSON attr
       logmatic.setSendConsoleLogs('severity'); // OPTIONAL fwd any console log using 'severity' as JSON attr
       logmatic.setIPTracking('client.IP'); // OPTIONAL resolve client IP and copy it @ 'client.IP'
       logmatic.setUserAgentTracking('client.user-agent'); // OPTIONAL resolve client IP and copy it @ 'client.user-agent'
