@@ -86,6 +86,8 @@ Please read their documentation for more details and options.
 
 ### Log some events
 
+#### Fire your own events
+
 To log some events you simply there is simple an unique method called *log(<message>,<context>)*. The message is a piece of text, the context is an object that you want to associate to the message.
 
 ```html
@@ -107,11 +109,52 @@ To clearly explain what happens here, in this exact situation where everything i
   "name": "My button name",
   "message": "Button clicked",
   "url": "...",
-  "client" {
+  "client": {
     "IP" : "109.30.xx.xxx",
     "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.130 Safari/537.36"
   }
 }
+```
+
+#### Automatic handling of errors
+
+When `setSendErrors` init method is invoked with **TraceKit** enabled. Errors should be reported has this example below:
+
+```
+{
+    "severity": "error",
+    "client": {
+      "IP": "109.30.xx.xxx",
+      "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"
+    },
+    "message": "This is a fake error!!",
+    "userId": "1234",
+    "url": "../logmatic-js/test/test-client.html",
+    "error": {
+      "mode": "stack",
+      "name": "Error",
+      "message": "This is a fake error!!",
+      "stack": [
+        {
+          "args": [],
+          "func": "bar",
+          "line": 32,
+          "column": 15,
+          "context": {},
+          "url": "../logmatic-js/test/test-client.html"
+        },
+        {
+          "args": [],
+          "func": "foo",
+          "line": 28,
+          "column": 9,
+          "context": {},
+          "url": "../logmatic-js/test/test-client.html"
+        },
+        ... And more...
+      ]
+    }
+  }
 ```
 
 ### Try the `test-client.html` page
