@@ -1,14 +1,15 @@
 <html>
   <head>
     <title>Example to send logs to Logmatic.io</title>
+    <!-- <script type="text/javascript" src="../bower_components/tracekit/tracekit.js"></script> -->
     <script type="text/javascript" src="../src/logmatic.min.js"></script>
     <script>
       // Set your API key
-      logmatic.init('<your_api_key>');
+      logmatic.init('<api_key>');
 
       // Optional init methods
       logmatic.setMetas({ 'userId': '1234',"hostname":"front","appname":"myapp"}); // OPTIONAL add some meta attributes in final JSON entries
-      logmatic.setSendConsoleErrors('exception'); // OPTIONAL fwd any error using 'exception' as JSON attr
+      logmatic.setSendErrors('exception'); // OPTIONAL fwd any error using 'exception' as JSON attr
       logmatic.setSendConsoleLogs('severity'); // OPTIONAL fwd any console log using 'severity' as JSON attr
       logmatic.setIPTracking('client.IP'); // OPTIONAL resolve client IP and copy it @ 'client.IP'
       logmatic.setUserAgentTracking('client.user-agent'); // OPTIONAL resolve client IP and copy it @ 'client.user-agent'
@@ -20,7 +21,15 @@
       }
 
       function fireError () {
-        throw 'This is a fake error!!';
+        foo();
+      }
+
+      function foo(){
+        bar();
+      }
+
+      function bar(){
+        throw new Error('This is a fake error!!');
       }
 
       function consoleLog () {

@@ -181,27 +181,40 @@
     });
   }
 
-  function setSendConsoleErrors (errorAttribute) {
+  function setSendErrors (errorAttribute) {
     if (errorAttribute) {
-      var oldhandler = window.onerror;
-      window.onerror = function (message, url, line, col) {
-        var errorProperties = {};
-        errorProperties[errorAttribute] = {
-          type: 'JSException',
-          url: url,
-          line: line,
-          col: col
+
+      //Use TraceKit if available, fallback on basic error reporting otherwise
+      var TraceKit = window.TraceKit;
+      if(TraceKit){
+        TraceKit.report.subscribe(function(errorReport) {
+            var errorProperties = {};
+            errorProperties[errorAttribute] = errorReport;
+            if (_levelAttr) {
+              errorProperties[_levelAttr] = "error";
+            }
+            log(errorReport.message, errorProperties);
+        });
+      }else {
+        var oldhandler = window.onerror;
+        window.onerror = function (message, url, line, column) {
+          var errorProperties = {};
+          errorProperties[errorAttribute] = {
+            mode: 'JSException',
+            url: url,
+            line: line,
+            column: column
+          };
+
+          if (_levelAttr) {
+            errorProperties[_levelAttr] = "error";
+          }
+          log(message, errorProperties);
+          if (oldhandler && (typeof(oldhandler) === 'function')) {
+            oldhandler.apply(window, arguments);
+          }
         };
-
-        if (_levelAttr) {
-          errorProperties[_levelAttr] = "error";
-        }
-
-        log(message, errorProperties);
-        if (oldhandler && (typeof(oldhandler) === 'function')) {
-          oldhandler.apply(window, arguments);
-        }
-      };
+      }
     }
   }
 
@@ -221,7 +234,8 @@
     init: init,
     log: log,
     setMetas: setMetas,
-    setSendConsoleErrors: setSendConsoleErrors,
+    setSendErrors: setSendErrors,
+    setSendConsoleErrors: setSendErrors,
     setSendConsoleLogs: setSendConsoleLogs,
     setIPTracking: setIPTracking,
     setUserAgentTracking: setUserAgentTracking,

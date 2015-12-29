@@ -22,7 +22,8 @@ You simply have to include the minified script and initialize it with your write
 <html>
   <head>
     <title>Example to send logs to Logmatic.io</title>
-    <script type="text/javascript" src="../src/logmatic.min.js"></script>
+    <script type="text/javascript" src="<path_to_tracekit>/tracekit/tracekit.js"></script> //OPTIONAL but provides better error handling
+    <script type="text/javascript" src="<path_to_logmatic>/src/logmatic.min.js"></script>
     <script>
       // Set your API key
       logmatic.init('<your_api_key>');
@@ -31,7 +32,7 @@ You simply have to include the minified script and initialize it with your write
       // add some meta attributes in final JSON
       logmatic.setMetas({'userId': '1234'});
       // fwd any error using 'exception' as JSON attr
-      logmatic.setSendConsoleErrors('exception');
+      logmatic.setSendErrors('exception');
       // fwd any console log using 'severity' as JSON attr
       logmatic.setSendConsoleLogs('severity');
       // resolve client IP and copy it @ 'client.IP'
@@ -49,14 +50,18 @@ You simply have to include the minified script and initialize it with your write
 </html>
 ```
 
-Or using npm:
+#### Using npm:
 
-    npm install --save logmatic/logmatic-js#master
+`npm install --save tracekit@0.3.1` //OPTIONAL but provides better error handling
+`npm install --save logmatic/logmatic-js#master`
 
 ```javascript
 // commonjs
+var TraceKit = require('tracekit'); //OPTIONAL but provides better error handling
 var logmatic = require('logmatic-js');
+
 // ES2015
+import TraceKit from 'tracekit'; //OPTIONAL but provides better error handling
 import logmatic from 'logmatic-js';
 
 // Set your API key
@@ -64,6 +69,18 @@ logmatic.init('<your_api_key>');
 // ...
 // same as before
 ```
+
+### Handling of errors
+
+You can handle errors by calling the `setSendErrors` initialization method. By default, logmatic-js catches all the errors from `window.onerror`.
+
+However, we **truelly advise you to use TraceKit** which is automatically recognized by logmatic-js and takes precedence over the former method.
+[TraceKit](https://github.com/csnover/TraceKit) gives you:
+- Stack traces when errors are properly fired
+- Resolves source maps for minified files
+- Resolves name of the method & add context
+
+Please read their documentation for more details and options.
 
 ### Log some events
 
@@ -119,7 +136,7 @@ You can also use all the following parameters using the right method:
 | Method        | Description           |  Example  |
 | ------------- | ------------- |  ----- |
 | setMetas(<object>) | add some meta attributes in final JSON | `.setMetas({ 'userId': '1234' })` |
-| setSendConsoleErrors(<exception_attr>) | fwd any error using exception_attr as JSON attr | `.setSendConsoleErrors('exception');`|
+| setSendErrors(<exception_attr>) | fwd any error using exception_attr as JSON attr | `.setSendConsoleErrors('exception');`|
 | setSendConsoleLogs(<level_attr>) | fwd any console log using level_attr" as JSON attr | `.setSendConsoleLogs('level')`|
 | setIPTracking(<ip_attr>) | resolve client IP and copy it @ ip_attr | `.setIPTracking('client.IP')`|
 | setUserAgentTracking(<ua_attr>) | resolve client UA and copy it @ ua_attr | `.setUserAgentTracking('client.user-agent')`|
