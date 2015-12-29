@@ -76,7 +76,7 @@ logmatic.init('<your_api_key>');
 
 You can handle errors by calling the `setSendErrors` initialization method. By default, logmatic-js catches all the errors from `window.onerror`.
 
-However, we **truelly advise you to use TraceKit** which is automatically recognized by logmatic-js and takes precedence over the former method.
+However, we **advise you to use TraceKit** which is automatically recognized by logmatic-js and takes precedence over the former method.
 [TraceKit](https://github.com/csnover/TraceKit) gives you:
 - Stack traces when errors are properly fired
 - Resolves source maps for minified files
