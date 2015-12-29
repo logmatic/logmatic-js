@@ -52,7 +52,8 @@ You simply have to include the minified script and initialize it with your write
 
 #### Using npm:
 
-`npm install --save tracekit@0.3.1` //OPTIONAL but provides better error handling
+//OPTIONAL TraceKit is optional but it provides better error handling
+`npm install --save tracekit@0.3.1`
 `npm install --save logmatic/logmatic-js#master`
 
 ```javascript
