@@ -102,7 +102,7 @@ logmatic.log('Button clicked', { name: 'My button name' });
 
 To clearly explain what happens here, in this exact situation where everything is configured as above the API POSTs the following JSON content to *Logmatic.io*'s API.:
 
-```
+```js
 {
   "severity": "info",
   "userId: "1234",
@@ -120,7 +120,7 @@ To clearly explain what happens here, in this exact situation where everything i
 
 When `setSendErrors` init method is invoked with **TraceKit** enabled. Errors should be reported has this example below:
 
-```
+```js
 {
     "severity": "error",
     "client": {
