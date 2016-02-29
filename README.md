@@ -63,8 +63,8 @@ var TraceKit = require('tracekit'); //OPTIONAL but provides better error handlin
 var logmatic = require('logmatic-js');
 
 // ES2015
-import TraceKit from 'tracekit'; //OPTIONAL but provides better error handling
-import logmatic from 'logmatic-js';
+// import TraceKit from 'tracekit'; //OPTIONAL but provides better error handling
+// import logmatic from 'logmatic-js';
 
 // Set your API key
 logmatic.init('<your_api_key>');
