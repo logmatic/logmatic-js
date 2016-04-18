@@ -39,8 +39,7 @@
   };
 
   var forceEndpoint = function (url) {
-    _url = url
-
+    _url = url;
   }
 
   var setBulkOptions = function (opts) {
