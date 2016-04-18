@@ -38,6 +38,11 @@
     _url = 'https://api.logmatic.io/v1/input/' + key;
   };
 
+  var forceEndpoint = function (url) {
+    _url = url
+
+  }
+
   var setBulkOptions = function (opts) {
     opts = opts || {};
     if (opts.lingerMs != null) {
@@ -102,6 +107,8 @@
   var post = function () {
     var data;
     if (_bulkMaxPostCount > 0 && _queue.length > _bulkMaxPostCount) {
+
+
       data = '[' + _queue.splice(0, _bulkMaxPostCount).join(',') + ']';
     } else {
       data = _queue.length > 1 ? '[' + _queue.join(',') + ']' : _queue[0];
