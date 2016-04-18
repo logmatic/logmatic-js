@@ -190,3 +190,10 @@ You can also use all the following parameters using the right method:
 | | lingerMs: A delay used to give a change to bulk a few line of logs together |
 | | maxPostCount: How many log lines should each post send at most (-1 no limit) |
 | | maxWaitingCount: How many log lines can be queued before dropping some (-1 no limit) |
+
+
+## FAQ
+
+### How to force a custom endpoint URL?
+You can override the default URL with the `logmatic.forceEndpoint('https://A_CUSTOM_URL')` method. Notice, this method
+ignore the `key` set via the `logmatic.init('API_KEY')` method.
