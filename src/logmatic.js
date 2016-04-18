@@ -239,6 +239,7 @@
   return {
     init: init,
     log: log,
+    forceEndpoint: forceEndpoint,
     setMetas: setMetas,
     setSendErrors: setSendErrors,
     setSendConsoleErrors: setSendErrors,
