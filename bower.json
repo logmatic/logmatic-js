@@ -8,7 +8,7 @@
   "_direct": true,
   "license": "MIT",
   "version": "0.0.11",
-  "main": "src/logmatic.min.js",
+  "main": "src/logmatic.js",
   "keywords": [
     "logmatic-js",
     "jslogger",
