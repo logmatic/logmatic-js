@@ -197,4 +197,4 @@ You can also use all the following parameters using the right method:
 
 ### How to force a custom endpoint URL?
 You can override the default URL with the `logmatic.forceEndpoint('https://A_CUSTOM_URL')` method. Notice, this method
-ignore the `key` set via the `logmatic.init('API_KEY')` method.
+ignores the `key` set via the `logmatic.init('API_KEY')` method.
