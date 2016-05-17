@@ -181,13 +181,13 @@ You can also use all the following parameters using the right method:
 
 | Method        | Description           |  Example  |
 | ------------- | ------------- |  ----- |
-| setMetas(<object>) | add some meta attributes in final JSON | `.setMetas({ 'userId': '1234' })` |
-| setSendErrors(<exception_attr>) | fwd any error using exception_attr as JSON attr | `.setSendErrors('error');`|
-| setSendConsoleLogs(<level_attr>) | fwd any console log using level_attr" as JSON attr | `.setSendConsoleLogs('level')`|
-| setIPTracking(<ip_attr>) | resolve client IP and copy it @ ip_attr | `.setIPTracking('client.IP')`|
-| setUserAgentTracking(<ua_attr>) | resolve client UA and copy it @ ua_attr | `.setUserAgentTracking('client.user-agent')`|
-| setURLTracking(<url_attr>) | resolve URL and copy it @ url_attr | `.setURLTracking('url')`|
-| setBulkOptions({ lingerMs: <duration in ms>, maxPostCount: <count>, maxWaitingCount: <count> }) | Options to configure the bulking behavior. Bulking limits the number of requests emitted. | `.setBulkOptions({ lingerMs: 500, maxPostCount: 10, maxWaitingCount: -1 })`|
+| setMetas(object) | add some meta attributes in final JSON | `.setMetas({ 'userId': '1234' })` |
+| setSendErrors(exception_attr) | fwd any error using exception_attr as JSON attr | `.setSendErrors('error');`|
+| setSendConsoleLogs(level_attr) | fwd any console log using level_attr" as JSON attr | `.setSendConsoleLogs('level')`|
+| setIPTracking(ip_attr) | resolve client IP and the "ip_attr" field to the event | `.setIPTracking('client.IP')`|
+| setUserAgentTracking(ua_attr) | resolve client UA and the "ua_attr" field to the event | `.setUserAgentTracking('client.user-agent')`|
+| setURLTracking(url_attr) | resolve URL and the "url_attr" field to the event | `.setURLTracking('url')`|
+| setBulkOptions({ lingerMs: duration_in_ms, maxPostCount: count, maxWaitingCount: count }) | Options to configure the bulking behavior. Bulking limits the number of requests emitted. | `.setBulkOptions({ lingerMs: 500, maxPostCount: 10, maxWaitingCount: -1 })`|
 | | lingerMs: A delay used to give a change to bulk a few line of logs together |
 | | maxPostCount: How many log lines should each post send at most (-1 no limit) |
 | | maxWaitingCount: How many log lines can be queued before dropping some (-1 no limit) |
