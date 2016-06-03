@@ -23,6 +23,7 @@
   var _queue = null;
   var _posting = false;
   var _scheduled = null;
+  var _maxContentSize = 200 * 1024; // limit post to 200 KB
 
   function assign (fromObject, toObject) {
     if (fromObject) {
@@ -48,10 +49,14 @@
       _bulkLingerMs = opts.lingerMs;
     }
     if (opts.maxPostCount != null) {
+      if (opts.maxPostCount < 1) opts.maxPostCount = 1;
       _bulkMaxPostCount = opts.maxPostCount;
     }
     if (opts.maxWaitingCount != null) {
       _bulkMaxWaitingCount = opts.maxWaitingCount;
+    }
+    if (opts.maxContentSize != null) {
+      _maxContentSize = opts.maxContentSize;
     }
   };
 
@@ -91,6 +96,7 @@
   };
 
   var trypost = function (linger) {
+
     // See if we can post now
     if (_posting || _scheduled || !(_queue && _queue.length)) {
       return;
@@ -104,15 +110,33 @@
   };
 
   var post = function () {
-    var data;
-    if (_bulkMaxPostCount > 0 && _queue.length > _bulkMaxPostCount) {
 
+    var data = [];
+    var contentSize = 0;
 
-      data = '[' + _queue.splice(0, _bulkMaxPostCount).join(',') + ']';
-    } else {
-      data = _queue.length > 1 ? '[' + _queue.join(',') + ']' : _queue[0];
-      _queue = null;
+    for (var i = 0; i < _queue.length && i < _bulkMaxPostCount ; i++ ) {
+
+            var item = _queue.shift();
+            contentSize += item.length
+
+            // Max content size reached?
+            if (contentSize > _maxContentSize) {
+
+                // Drop the element, if its size is more than the max
+                if (item.length > _maxContentSize ) break;
+
+                // Otherwise, unshift the element
+                _queue.unshift(item)
+                break;
+            }
+
+            data.push(item)
+
     }
+
+    var payload = '[' +  data.join(',') + ']';
+    if (_queue.length == 0 ) _queue = null;
+
 
     _scheduled = null;
     _posting = true;
@@ -147,7 +171,7 @@
       trypost(false);
     };
 
-    request.send(data);
+    request.send(payload);
   };
 
   var setMetas = function (metas) {
