@@ -39,6 +39,7 @@
     _url = 'https://api.logmatic.io/v1/input/' + key;
   };
 
+  //private method
   var forceEndpoint = function (url) {
     _url = url;
   }
@@ -55,6 +56,7 @@
     if (opts.maxWaitingCount != null) {
       _bulkMaxWaitingCount = opts.maxWaitingCount;
     }
+    // internal settings (default 200KB)
     if (opts.maxContentSize != null) {
       _maxContentSize = opts.maxContentSize;
     }
