@@ -23,7 +23,7 @@
   var _queue = null;
   var _posting = false;
   var _scheduled = null;
-  var _maxContentSize = 200 * 1024; // limit post to 200 KB$
+  var _maxContentSize = 200 * 1024; // limit post to 200 KB
 
   var _locker = new netLocker();
 
