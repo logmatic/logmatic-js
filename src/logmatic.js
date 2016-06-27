@@ -23,7 +23,10 @@
   var _queue = null;
   var _posting = false;
   var _scheduled = null;
-  var _maxContentSize = 200 * 1024; // limit post to 200 KB
+  var _maxContentSize = 200 * 1024; // limit post to 200 KB$
+
+  var _locker = new netLocker();
+
 
   function assign (fromObject, toObject) {
     if (fromObject) {
@@ -34,6 +37,39 @@
       }
     }
   }
+
+  function netLocker () {
+
+      var _lock = false;
+      var _lingerMs = 1000;
+      var _maxLingerMs =  30 * 1000;
+      var _lingerFactor = 0;
+      var _alarm = null;
+
+      this.block = function() {
+
+        if (_alarm) clearTimeout(_alarm);
+        _lock = true;
+        var aCoupleOfSeconds =  _lingerMs * Math.pow(2, _lingerFactor);
+        _lingerFactor++;
+        aCoupleOfSeconds = (aCoupleOfSeconds < _maxLingerMs) ? aCoupleOfSeconds : _maxLingerMs;
+
+        _alarm = setTimeout(this.unblock, aCoupleOfSeconds);
+
+      };
+
+      this.unblock = function() {
+        _lock = false;
+        trypost(true);
+      };
+
+      this.isLocked = function() {
+        return _lock;
+      };
+  };
+
+
+
 
   var init = function (key) {
     _url = 'https://api.logmatic.io/v1/input/' + key;
@@ -100,7 +136,7 @@
   var trypost = function (linger) {
 
     // See if we can post now
-    if (_posting || _scheduled || !(_queue && _queue.length)) {
+    if (_locker.isLocked() || _posting || _scheduled || !(_queue && _queue.length)) {
       return;
     }
 
@@ -163,15 +199,17 @@
       }
     }
 
-    request.onload = function () {
-      _posting = false;
-      trypost(false);
-    };
+    // fired if the error is at the network level
+    var networkCallback = function(e) {
+        if (e.target.status != 200 && e.target.status != 0) {
+            _locker.block();
+        }
+        _posting = false;
+        trypost(false);
+    }
 
-    request.onerror = function () {
-      _posting = false;
-      trypost(false);
-    };
+    request.onerror = networkCallback;
+    request.onload = networkCallback;
 
     request.send(payload);
   };
