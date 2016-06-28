@@ -22,9 +22,10 @@
 
 
   var _queue = [];
+  var _posting = false;
   var _maxContentSize = 200 * 1024; // limit post to 200 KB
 
-  var _lingerManager = createLingerManager();
+  var _lingerManager = createLingerManager(_bulkLingerMs);
 
 
   function assign(fromObject, toObject) {
@@ -38,81 +39,73 @@
   }
 
 
-  function createLingerManager() {
+  function createLingerManager(lingerPeriodMs) {
 
     var manager = {};
+    manager.MODE = {
+      IMMEDIATE: 0,
+      LINGER: 1,
+      ERROR: 2
+    };
 
-    var _locked = false;
+    // constant values
+    var _backOffPeriodMs = 500;
+    var _backOffMaxPeriodMs = 30 * 1000;
+
     var _scheduled = false;
-    var _disabled = false;
-    var _failed = false;
     var _alarm = null;
+    var _mode = manager.MODE.LINGER;
     var _backOffFactor = 0;
-
-    const BACKOFF_PERIOD_MS = 500;
-    const BACKOFF_MAX_PERIOD_MS = 30 * 1000;
+    var _lingerPeriodMs = lingerPeriodMs;
 
 
-    manager.lock = function () {
-      _locked = true;
-    };
-
-    manager.unlock = function () {
+    manager.flush = function () {
       _scheduled = false;
-      _locked = false;
-    };
-
-    manager.isLocked = function () {
-      return _locked;
     };
 
 
     manager.isScheduled = function () {
       return _scheduled;
     };
-    manager.isDisabled = function () {
-      return _disabled || (_bulkLingerMs === 0);
+
+    manager.setMode = function (mode) {
+      _mode = mode;
+      if (_mode !== manager.MODE.ERROR) {
+        // reset the back-off factor
+        _backOffFactor = 0;
+      }
     };
 
     manager.postpone = function (_callback) {
 
-      var backOffPeriod = 0;
-
+      var timeMs;
       if (_alarm) {
         clearTimeout(_alarm);
       }
 
       _scheduled = true;
 
+      switch (_mode) {
 
-      if (_failed === true) {
-        backOffPeriod = BACKOFF_PERIOD_MS * Math.pow(2, _backOffFactor);
-        _backOffFactor++;
+        case manager.MODE.IMMEDIATE:
+          timeMs = 0;
+          break;
+
+        case manager.MODE.LINGER:
+          timeMs = _lingerPeriodMs;
+          break;
+
+        case manager.MODE.ERROR:
+          var backOffPeriodMs = _backOffPeriodMs * Math.pow(2, _backOffFactor);
+          _backOffFactor++;
+          timeMs = Math.min(backOffPeriodMs, _backOffMaxPeriodMs);
       }
+
 
       // Defer the callback
-      _alarm = setTimeout(_callback, Math.min(_bulkLingerMs + backOffPeriod, BACKOFF_MAX_PERIOD_MS));
+      _alarm = setTimeout(_callback, timeMs);
+      console.debug("Defer in " + timeMs);
 
-    };
-
-    manager.handleResponse = function (response) {
-
-      var status = response.target.status;
-
-      if (status === 200 || status === 0) {
-
-        // Disable the linger until the queue is empty
-        _disabled = _queue.length > 0;
-        _failed = false;
-        _backOffFactor = 0;
-
-      } else {
-        _failed = true;
-      }
-
-      _scheduled = false;
-      _locked = false;
-      tryPost();
     };
 
     return manager;
@@ -180,24 +173,22 @@
 
   var tryPost = function () {
 
-    // Do nothing if the linger is locked, already scheduled
-    if (_lingerManager.isLocked() || _lingerManager.isScheduled()) {
+    // Do nothing if the linger already scheduled or if a post is running
+    if (_lingerManager.isScheduled() || _posting) {
+
+      console.debug("Scheduled");
       return;
     }
 
-    if (_lingerManager.isDisabled()) {
-      post();
-    } else {
-      _lingerManager.postpone(post)
-    }
+    _lingerManager.postpone(post);
+
 
   };
 
 
   var post = function () {
 
-    // simple mutex to avoid multiple calls
-    _lingerManager.lock();
+    _posting = true;
 
     var data = [];
     var contentSize = 0;
@@ -223,9 +214,10 @@
 
     }
 
-    // Worst case: the first element was too big, do nothing
+    // Worst-case: the first element was too big
     if (data.length === 0) {
-      _lingerManager.unlock();
+      _posting = false;
+      _lingerManager.flush();
       return;
     }
 
@@ -253,8 +245,33 @@
     }
 
 
-    request.onerror = _lingerManager.handleResponse;
-    request.onload = _lingerManager.handleResponse;
+    function handleResponse(response) {
+
+      var status = response.target.status;
+
+      if (status === 200 || status === 0) {
+
+        if (_queue.length > 0) {
+          // continue until the queue is empty
+          _lingerManager.setMode(_lingerManager.MODE.IMMEDIATE);
+        } else {
+          // default mode
+          _lingerManager.setMode(_lingerManager.MODE.LINGER);
+        }
+      } else {
+        // use a back-off mechanism
+        _lingerManager.setMode(_lingerManager.MODE.ERROR);
+      }
+
+      _posting = false;
+      _lingerManager.flush();
+      tryPost();
+
+    }
+
+
+    request.onerror = handleResponse;
+    request.onload = handleResponse;
 
 
     request.send(payload);
@@ -360,4 +377,5 @@
     setURLTracking: setURLTracking,
     setBulkOptions: setBulkOptions
   };
-}));
+}))
+;
