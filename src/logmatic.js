@@ -42,11 +42,6 @@
 
     var manager = {};
 
-    //Linger mode
-    manager.LINGER_DEFAULT = 0;
-    manager.LINGER_NO_WAIT = 1;
-    manager.LINGER_BACKOFF = 2;
-
     var _locked = false;
     var _scheduled = false;
     var _disabled = false;
