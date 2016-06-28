@@ -8,7 +8,7 @@
   }
 }(this, function () {
 
-  var _url;
+  var _url = 'https://api.logmatic.io/v1/input/';
   var _metas;
   var _ipTrackingAttr;
   var _uaTrackingAttr;
@@ -41,11 +41,6 @@
   function createLingerManager() {
 
     var manager = {};
-
-    //Linger mode
-    manager.LINGER_DEFAULT = 0;
-    manager.LINGER_NO_WAIT = 1;
-    manager.LINGER_BACKOFF = 2;
 
     var _locked = false;
     var _scheduled = false;
@@ -125,7 +120,7 @@
 
 
   var init = function (key) {
-    _url = 'https://api.logmatic.io/v1/input/' + key;
+    _url = _url + key;
   };
 
   var forceEndpoint = function (url) {
