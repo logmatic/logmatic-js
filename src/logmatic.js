@@ -8,7 +8,7 @@
   }
 }(this, function () {
 
-  var _url;
+  var _url = 'https://api.logmatic.io/v1/input/';
   var _metas;
   var _ipTrackingAttr;
   var _uaTrackingAttr;
@@ -120,7 +120,7 @@
 
 
   var init = function (key) {
-    _url = 'https://api.logmatic.io/v1/input/' + key;
+    _url = _url + key;
   };
 
   var forceEndpoint = function (url) {
