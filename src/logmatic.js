@@ -101,10 +101,8 @@
           timeMs = Math.min(backOffPeriodMs, _backOffMaxPeriodMs);
       }
 
-
       // Defer the callback
       _alarm = setTimeout(_callback, timeMs);
-      console.debug("Defer in " + timeMs);
 
     };
 
@@ -175,8 +173,6 @@
 
     // Do nothing if the linger already scheduled or if a post is running
     if (_lingerManager.isScheduled() || _posting) {
-
-      console.debug("Scheduled");
       return;
     }
 
