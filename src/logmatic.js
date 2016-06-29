@@ -22,7 +22,6 @@
 
 
   var _queue = [];
-  var _posting = false;
   var _maxContentSize = 200 * 1024; // limit post to 200 KB
 
   var _lingerManager = createLingerManager(_bulkLingerMs);
@@ -173,7 +172,7 @@
   var tryPost = function () {
 
     // Do nothing if the linger already scheduled or if a post is running
-    if (_lingerManager.isScheduled() || _posting) {
+    if (_lingerManager.isScheduled()) {
       return;
     }
 
@@ -185,7 +184,6 @@
 
   var post = function () {
 
-    _posting = true;
 
     var data = [];
     var contentSize = 0;
@@ -207,7 +205,6 @@
         _lingerManager.setMode(_lingerManager.MODE.ERROR);
       }
 
-      _posting = false;
       _lingerManager.reset();
 
       if (_queue.length !== 0) {
