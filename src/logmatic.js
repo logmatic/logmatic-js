@@ -52,20 +52,23 @@
     var _backOffPeriodMs = 500;
     var _backOffMaxPeriodMs = 30 * 1000;
 
-    var _scheduled = false;
     var _alarm = null;
     var _mode = manager.MODE.LINGER;
     var _backOffFactor = 0;
     var _lingerPeriodMs = lingerPeriodMs;
 
 
-    manager.flush = function () {
-      _scheduled = false;
+    manager.reset = function () {
+
+      if (manager.isScheduled()) {
+        clearTimeout(_alarm);
+      }
+      _alarm = null;
     };
 
 
     manager.isScheduled = function () {
-      return _scheduled;
+      return _alarm !== null;
     };
 
     manager.setMode = function (mode) {
@@ -79,11 +82,9 @@
     manager.postpone = function (_callback) {
 
       var timeMs;
-      if (_alarm) {
-        clearTimeout(_alarm);
-      }
 
-      _scheduled = true;
+      manager.reset();
+
 
       switch (_mode) {
 
@@ -189,6 +190,32 @@
     var data = [];
     var contentSize = 0;
 
+    function handleExit(status) {
+
+
+      if (status === 200 || status === 0) {
+
+        if (_queue.length > 0) {
+          // continue until the queue is empty
+          _lingerManager.setMode(_lingerManager.MODE.IMMEDIATE);
+        } else {
+          // default mode
+          _lingerManager.setMode(_lingerManager.MODE.LINGER);
+        }
+      } else {
+        // use a back-off mechanism
+        _lingerManager.setMode(_lingerManager.MODE.ERROR);
+      }
+
+      _posting = false;
+      _lingerManager.reset();
+
+      if (_queue.length !== 0) {
+        tryPost();
+      }
+
+    }
+
     while (_queue.length > 0 && data.length < _bulkMaxPostCount) {
 
       var item = _queue.shift();
@@ -212,8 +239,7 @@
 
     // Worst-case: the first element was too big
     if (data.length === 0) {
-      _posting = false;
-      _lingerManager.flush();
+      handleExit(0);
       return;
     }
 
@@ -240,34 +266,13 @@
       }
     }
 
+    request.onerror = function (response) {
+      handleExit(response.target.status);
+    };
 
-    function handleResponse(response) {
-
-      var status = response.target.status;
-
-      if (status === 200 || status === 0) {
-
-        if (_queue.length > 0) {
-          // continue until the queue is empty
-          _lingerManager.setMode(_lingerManager.MODE.IMMEDIATE);
-        } else {
-          // default mode
-          _lingerManager.setMode(_lingerManager.MODE.LINGER);
-        }
-      } else {
-        // use a back-off mechanism
-        _lingerManager.setMode(_lingerManager.MODE.ERROR);
-      }
-
-      _posting = false;
-      _lingerManager.flush();
-      tryPost();
-
-    }
-
-
-    request.onerror = handleResponse;
-    request.onload = handleResponse;
+    request.onload = function (response) {
+      handleExit(response.target.status);
+    };
 
 
     request.send(payload);
