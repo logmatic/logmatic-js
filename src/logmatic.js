@@ -1,4 +1,3 @@
-
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     define([], factory);
@@ -7,8 +6,9 @@
   } else {
     root.logmatic = factory();
   }
-} (this, function () {
-  var _url;
+}(this, function () {
+
+  var _url = 'https://api.logmatic.io/v1/input/';
   var _metas;
   var _ipTrackingAttr;
   var _uaTrackingAttr;
@@ -20,12 +20,14 @@
   var _bulkMaxPostCount = 10;
   var _bulkMaxWaitingCount = -1;
 
-  var _queue = null;
-  var _posting = false;
-  var _scheduled = null;
+
+  var _queue = [];
   var _maxContentSize = 200 * 1024; // limit post to 200 KB
 
-  function assign (fromObject, toObject) {
+  var _lingerManager = createLingerManager(_bulkLingerMs);
+
+
+  function assign(fromObject, toObject) {
     if (fromObject) {
       for (var key in fromObject) {
         if (fromObject.hasOwnProperty(key)) {
@@ -35,18 +37,90 @@
     }
   }
 
+
+  function createLingerManager(lingerPeriodMs) {
+
+    var manager = {};
+    manager.MODE = {
+      IMMEDIATE: 0,
+      LINGER: 1,
+      ERROR: 2
+    };
+
+    // constant values
+    var _backOffPeriodMs = 500;
+    var _backOffMaxPeriodMs = 30 * 1000;
+
+    var _alarm = null;
+    var _mode = manager.MODE.LINGER;
+    var _backOffFactor = 0;
+    var _lingerPeriodMs = lingerPeriodMs;
+
+
+    manager.reset = function () {
+
+      if (manager.isScheduled()) {
+        clearTimeout(_alarm);
+      }
+      _alarm = null;
+    };
+
+
+    manager.isScheduled = function () {
+      return _alarm !== null;
+    };
+
+    manager.setMode = function (mode) {
+      _mode = mode;
+      if (_mode !== manager.MODE.ERROR) {
+        // reset the back-off factor
+        _backOffFactor = 0;
+      }
+    };
+
+    manager.postpone = function (_callback) {
+
+      var timeMs;
+
+      manager.reset();
+
+
+      switch (_mode) {
+
+        case manager.MODE.IMMEDIATE:
+          timeMs = 0;
+          break;
+
+        case manager.MODE.LINGER:
+          timeMs = _lingerPeriodMs;
+          break;
+
+        case manager.MODE.ERROR:
+          var backOffPeriodMs = _backOffPeriodMs * Math.pow(2, _backOffFactor);
+          _backOffFactor++;
+          timeMs = Math.min(backOffPeriodMs, _backOffMaxPeriodMs);
+      }
+
+      // Defer the callback
+      _alarm = setTimeout(_callback, timeMs);
+
+    };
+
+    return manager;
+  }
+
+
   var init = function (key) {
-    _url = 'https://api.logmatic.io/v1/input/' + key;
+    _url = _url + key;
   };
 
-  //private method
   var forceEndpoint = function (url) {
     _url = url;
-  }
+  };
 
   var setBulkOptions = function (opts) {
     opts = opts || {};
-    if (opts.lingerMs != null) {
+    if (opts.lingerMs != null && opts.lingerMs >= 0) {
       _bulkLingerMs = opts.lingerMs;
     }
     if (opts.maxPostCount != null) {
@@ -56,7 +130,6 @@
     if (opts.maxWaitingCount != null) {
       _bulkMaxWaitingCount = opts.maxWaitingCount;
     }
-    // internal settings (default 200KB)
     if (opts.maxContentSize != null) {
       _maxContentSize = opts.maxContentSize;
     }
@@ -64,7 +137,6 @@
 
   var log = function (message, context) {
     if (!_url) {
-      console.error('Please init Logmatic before pushing events');
       return;
     }
     var payload = {
@@ -94,60 +166,88 @@
       _queue.shift();
     }
 
-    trypost(true);
+    tryPost();
   };
 
-  var trypost = function (linger) {
+  var tryPost = function () {
 
-    // See if we can post now
-    if (_posting || _scheduled || !(_queue && _queue.length)) {
+    // Do nothing if the linger already scheduled or if a post is running
+    if (_lingerManager.isScheduled()) {
       return;
     }
 
-    if (linger && _bulkLingerMs >= 0) {
-      _scheduled = setTimeout(post, _bulkLingerMs);
-    } else {
-      post();
-    }
+    _lingerManager.postpone(post);
+
+
   };
 
+
   var post = function () {
+
 
     var data = [];
     var contentSize = 0;
 
-    for (var i = 0; i < _queue.length && i < _bulkMaxPostCount ; i++ ) {
+    function handleExit(status) {
 
-            var item = _queue.shift();
-            contentSize += item.length
 
-            // Max content size reached?
-            if (contentSize > _maxContentSize) {
+      if (status === 200 || status === 0) {
 
-                // Drop the element, if its size is more than the max
-                if (item.length > _maxContentSize ) break;
+        if (_queue.length > 0) {
+          // continue until the queue is empty
+          _lingerManager.setMode(_lingerManager.MODE.IMMEDIATE);
+        } else {
+          // default mode
+          _lingerManager.setMode(_lingerManager.MODE.LINGER);
+        }
+      } else {
+        // use a back-off mechanism
+        _lingerManager.setMode(_lingerManager.MODE.ERROR);
+      }
 
-                // Otherwise, unshift the element
-                _queue.unshift(item)
-                break;
-            }
+      _lingerManager.reset();
 
-            data.push(item)
+      if (_queue.length !== 0) {
+        tryPost();
+      }
 
     }
 
-    var payload = '[' +  data.join(',') + ']';
-    if (_queue.length == 0 ) _queue = null;
+    while (_queue.length > 0 && data.length < _bulkMaxPostCount) {
 
+      var item = _queue.shift();
+      contentSize += item.length;
 
-    _scheduled = null;
-    _posting = true;
+      if (contentSize > _maxContentSize) {
+
+        // Drop the element if its size is more than the max allowed
+        if (item.length > _maxContentSize) {
+          break;
+        }
+
+        // Otherwise, unshift the element
+        _queue.unshift(item);
+        break;
+      }
+
+      data.push(item)
+
+    }
+
+    // Worst-case: the first element was too big
+    if (data.length === 0) {
+      handleExit(0);
+      return;
+    }
+
+    var payload = '[' + data.join(',') + ']';
 
     var request;
     if (typeof (XDomainRequest) !== 'undefined') { // IE8/9
       request = new XDomainRequest();
+    } else {
+      request = new XMLHttpRequest();
     }
-    request = new XMLHttpRequest();
     request.open('POST', _url, true);
 
     if (request.constructor === XMLHttpRequest) {
@@ -163,31 +263,31 @@
       }
     }
 
-    request.onload = function () {
-      _posting = false;
-      trypost(false);
+    request.onerror = function (response) {
+      handleExit(response.target.status);
     };
 
-    request.onerror = function () {
-      _posting = false;
-      trypost(false);
+    request.onload = function (response) {
+      handleExit(response.target.status);
     };
+
 
     request.send(payload);
+
   };
 
   var setMetas = function (metas) {
     _metas = metas;
   };
 
-  function setSendConsoleLogs (consoleLevelAttribute) {
-    if(consoleLevelAttribute){
+  function setSendConsoleLogs(consoleLevelAttribute) {
+    if (consoleLevelAttribute) {
       _levelAttr = consoleLevelAttribute;
     }
     if (!console) {
       return;
     }
-    [{ f: 'log', l: 'info' }, { f: 'info' }, { f: 'trace' }, { f: 'warn' }, { f: 'error' }].forEach(function (decl) {
+    [{f: 'log', l: 'info'}, {f: 'info'}, {f: 'trace'}, {f: 'warn'}, {f: 'error'}].forEach(function (decl) {
       var funName = decl.f;
       var level = decl.l || decl.f;
       var oldFun = console[funName];
@@ -200,7 +300,7 @@
         }
         // Now we build the message and log it
         var message = Array.prototype.slice.call(arguments).map(function (a) {
-            return typeof (a) === 'object' ? JSON.stringify(a) : String(a);
+          return typeof (a) === 'object' ? JSON.stringify(a) : String(a);
         }).join(' ');
         log(message, props);
         // Fwd call to old impl.
@@ -213,21 +313,21 @@
     });
   }
 
-  function setSendErrors (errorAttribute) {
+  function setSendErrors(errorAttribute) {
     if (errorAttribute) {
 
       //Use TraceKit if available, fallback on basic error reporting otherwise
       var TraceKit = window.TraceKit;
-      if(TraceKit){
-        TraceKit.report.subscribe(function(errorReport) {
-            var errorProperties = {};
-            errorProperties[errorAttribute] = errorReport;
-            if (_levelAttr) {
-              errorProperties[_levelAttr] = "error";
-            }
-            log(errorReport.message, errorProperties);
+      if (TraceKit) {
+        TraceKit.report.subscribe(function (errorReport) {
+          var errorProperties = {};
+          errorProperties[errorAttribute] = errorReport;
+          if (_levelAttr) {
+            errorProperties[_levelAttr] = "error";
+          }
+          log(errorReport.message, errorProperties);
         });
-      }else {
+      } else {
         var oldhandler = window.onerror;
         window.onerror = function (message, url, line, column) {
           var errorProperties = {};
@@ -275,4 +375,5 @@
     setURLTracking: setURLTracking,
     setBulkOptions: setBulkOptions
   };
-}));
+}))
+;
