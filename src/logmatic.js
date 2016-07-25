@@ -220,12 +220,12 @@
 
       if (contentSize > _maxContentSize) {
 
-        // Drop the element if its size is more than the max allowed
+        // Drop the element if its size is more than the max allowed, but warn the user
         if (item.length > _maxContentSize) {
-          break;
+          item = "{\"severity\":\"warn\",\"message\": \"Message dropped, its size exceed the hard limit\"}";
         }
 
-        // Otherwise, unshift the element
+        // Unshift the element
         _queue.unshift(item);
         break;
       }
