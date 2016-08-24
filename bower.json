@@ -7,7 +7,7 @@
   "_originalSource": "logmatic-js",
   "_direct": true,
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "src/logmatic.js",
   "keywords": [
     "logmatic-js",
