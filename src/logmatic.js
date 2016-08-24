@@ -222,16 +222,16 @@
 
         // Drop the element if its size is more than the max allowed, but warn the user
         if (item.length > _maxContentSize) {
-          var newItem = {"severity": "warn", "message": "Message dropped, its size exceed the hard limit"};
+          var newItem = {"severity": "warn", "message": "Message dropped as its size exceeded the hard limit of 200 kBytes"};
           assign(_metas, newItem);
 
           if (JSON.stringify(newItem).length > _maxContentSize) {
             // Fatal! context is too big.
             newItem = {
               "severity": "error",
-              "message": "Message dropped because the context size provided exceed the hard limit"
+              "message": "Message dropped because the context size provided exceeded the hard limit of 200 kBytes"
             };
-            
+
           }
 
           // Provide at least the url
