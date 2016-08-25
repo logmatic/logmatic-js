@@ -1,7 +1,7 @@
 # logmatic-js
 *Link to the [Logmatic.io documentation](http://doc.logmatic.io/docs/javascript-clients-web-browsers)*
 
-Client-side JavaScript logging library for Logmatic.io.
+Client-side JavaScript logging library for [Logmatic.io](https://logmatic.io).
 
 ## Features
 
