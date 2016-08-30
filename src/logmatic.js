@@ -264,7 +264,7 @@
     }
     request.open('POST', _url, true);
 
-    if (request.constructor === XMLHttpRequest) {
+    if (typeof (XDomainRequest) === 'undefined') {
       request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 
       // IP tracking
