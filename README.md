@@ -182,6 +182,7 @@ You can also use all the following parameters using the right method:
 | Method        | Description           |  Example  |
 | ------------- | ------------- |  ----- |
 | setMetas(object) | add some meta attributes in final JSON | `.setMetas({ 'userId': '1234' })` |
+| addMeta(key, value) | add some meta attributes in final JSON | `.addMeta("userEmail", "foo@example.com")` |
 | setSendErrors(exception_attr) | fwd any error using exception_attr as JSON attr | `.setSendErrors('error');`|
 | setSendConsoleLogs(level_attr) | fwd any console log using level_attr" as JSON attr | `.setSendConsoleLogs('level')`|
 | setIPTracking(ip_attr) | resolve client IP and the "ip_attr" field to the event | `.setIPTracking('client.IP')`|

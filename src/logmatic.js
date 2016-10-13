@@ -294,6 +294,10 @@
     _metas = metas;
   };
 
+  var addMeta = function (key, value) {
+      _metas.key = value;
+    };
+
   function setSendConsoleLogs(consoleLevelAttribute) {
     if (consoleLevelAttribute) {
       _levelAttr = consoleLevelAttribute;
