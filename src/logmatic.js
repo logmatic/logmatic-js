@@ -320,7 +320,7 @@
   };
 
   var addMeta = function (key, value) {
-    _metas.key = value;
+    _metas[key] = value;
   };
 
   function setSendConsoleLogs(consoleLevelAttribute) {
