@@ -172,9 +172,14 @@ You must call the init method to configure the logger:
 logmatic.init(<your_api_key>);
 ```
 
-There is only one method to send log events to *Logmatic.io*:
+There are one method for each level to send log events to *Logmatic.io*:
 ```
-logmatic.log(<message>,<context>);
+logmatic.log(<message>,<context>, <severity>);
+logmatic.error(<message>,<context>);
+logmatic.warn(<message>,<context>);
+logmatic.info(<message>,<context>);
+logmatic.debug(<message>,<context>);
+logmatic.trace(<message>,<context>);
 ```
 
 You can also use all the following parameters using the right method:
@@ -182,6 +187,7 @@ You can also use all the following parameters using the right method:
 | Method        | Description           |  Example  |
 | ------------- | ------------- |  ----- |
 | setMetas(object) | add some meta attributes in final JSON | `.setMetas({ 'userId': '1234' })` |
+| addMeta(key, value) | add some meta attributes in final JSON | `.addMeta("userEmail", "foo@example.com")` |
 | setSendErrors(exception_attr) | fwd any error using exception_attr as JSON attr | `.setSendErrors('error');`|
 | setSendConsoleLogs(level_attr) | fwd any console log using level_attr" as JSON attr | `.setSendConsoleLogs('level')`|
 | setIPTracking(ip_attr) | resolve client IP and the "ip_attr" field to the event | `.setIPTracking('client.IP')`|

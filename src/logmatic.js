@@ -135,14 +135,36 @@
     }
   };
 
-  var log = function (message, context) {
+  var trace = function (message, context) {
+    log(message, context, "trace")
+  }
+
+  var debug = function (message, context) {
+    log(message, context, "debug")
+  }
+
+  var info = function (message, context) {
+    log(message, context, "info")
+  }
+
+  var warn = function (message, context) {
+    log(message, context, "warn")
+  }
+
+  var error = function (message, context) {
+    log(message, context, "error")
+  }
+
+  var log = function (message, context, severity) {
     if (!_url) {
       return;
     }
     var payload = {
       message: message
     };
-    if (_levelAttr) {
+    if (severity) {
+      payload[_levelAttr] = severity
+    } else {
       payload[_levelAttr] = "info";
     }
     assign(context, payload);
@@ -222,7 +244,10 @@
 
         // Drop the element if its size is more than the max allowed, but warn the user
         if (item.length > _maxContentSize) {
-          var newItem = {"severity": "warn", "message": "Message dropped as its size exceeded the hard limit of 200 kBytes"};
+          var newItem = {
+            "severity": "warn",
+            "message": "Message dropped as its size exceeded the hard limit of 200 kBytes"
+          };
           assign(_metas, newItem);
 
           if (JSON.stringify(newItem).length > _maxContentSize) {
@@ -292,6 +317,10 @@
 
   var setMetas = function (metas) {
     _metas = metas;
+  };
+
+  var addMeta = function (key, value) {
+    _metas[key] = value;
   };
 
   function setSendConsoleLogs(consoleLevelAttribute) {
@@ -378,9 +407,15 @@
 
   return {
     init: init,
-    log: log,
+    log: info,
+    trace: trace,
+    debug: debug,
+    info: info,
+    warn: warn,
+    error: error,
     forceEndpoint: forceEndpoint,
     setMetas: setMetas,
+    addMeta: addMeta,
     setSendErrors: setSendErrors,
     setSendConsoleErrors: setSendErrors,
     setSendConsoleLogs: setSendConsoleLogs,
