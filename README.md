@@ -172,9 +172,14 @@ You must call the init method to configure the logger:
 logmatic.init(<your_api_key>);
 ```
 
-There is only one method to send log events to *Logmatic.io*:
+There are one method for each level to send log events to *Logmatic.io*:
 ```
-logmatic.log(<message>,<context>);
+logmatic.log(<message>,<context>, <severity>);
+logmatic.error(<message>,<context>);
+logmatic.warn(<message>,<context>);
+logmatic.info(<message>,<context>);
+logmatic.debug(<message>,<context>);
+logmatic.trace(<message>,<context>);
 ```
 
 You can also use all the following parameters using the right method:
