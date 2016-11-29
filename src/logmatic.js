@@ -181,7 +181,7 @@
     }
 
     _queue = _queue || [];
-    _queue.push(JSON.stringify(payload));
+    _queue.push(_stringify(payload));
 
     // Check if we are growing above the max waiting count (if any)
     if (_bulkMaxWaitingCount >= 0 && _queue.length > _bulkMaxWaitingCount) {
@@ -202,7 +202,6 @@
 
 
   };
-
 
   var post = function () {
 
@@ -236,12 +235,10 @@
     }
 
     while (_queue.length > 0 && data.length < _bulkMaxPostCount) {
-
       var item = _queue.shift();
       contentSize += item.length;
 
       if (contentSize > _maxContentSize) {
-
         // Drop the element if its size is more than the max allowed, but warn the user
         if (item.length > _maxContentSize) {
           var newItem = {
@@ -249,27 +246,14 @@
             "message": "Message dropped as its size exceeded the hard limit of " + _maxContentSize + " kBytes"
           };
           assign(_metas, newItem);
-
-          if (JSON.stringify(newItem).length > _maxContentSize) {
-            // Fatal! context is too big.
-            newItem = {
-              "severity": "error",
-              "message": "Message dropped because the context size provided exceeded the hard limit of " + _maxContentSize + " kBytes"
-            };
-
-          }
-
-          // Provide at least the url
           newItem[_urlTrackingAttr] = window.location.href;
-          item = JSON.stringify(newItem);
-
-        // Unshift the element
+          item = _stringify(newItem);
+        }
+        // the warn will be send with the next tick/post/call
         _queue.unshift(item);
         break;
       }
-
       data.push(item)
-
     }
 
     // Worst-case: the first element was too big
@@ -342,7 +326,7 @@
         }
         // Now we build the message and log it
         var message = Array.prototype.slice.call(arguments).map(function (a) {
-          return typeof (a) === 'object' ? JSON.stringify(a) : String(a);
+          return typeof (a) === 'object' ? _stringify(a) : String(a);
         }).join(' ');
         log(message, props);
         // Fwd call to old impl.
@@ -423,5 +407,33 @@
     setURLTracking: setURLTracking,
     setBulkOptions: setBulkOptions
   };
+
+
+  // tooling methods
+  function _stringify(obj, replacer, spaces, cycleReplacer) {
+    var serializer = function (replacer, cycleReplacer) {
+      var stack = [], keys = [];
+
+      if (cycleReplacer == null) cycleReplacer = function (key, value) {
+        if (stack[0] === value) return "[Object Parent]"
+        return "[Object Parent] " + keys.slice(0, stack.indexOf(value)).join(".")
+      };
+
+      return function (key, value) {
+        if (stack.length > 0) {
+          var thisPos = stack.indexOf(this);
+          ~thisPos ? stack.splice(thisPos + 1) : stack.push(this);
+          ~thisPos ? keys.splice(thisPos, Infinity, key) : keys.push(key);
+          if (~stack.indexOf(value)) value = cycleReplacer.call(this, key, value)
+        }
+        else stack.push(value);
+
+        return replacer == null ? value : replacer.call(this, key, value)
+      }
+    };
+    return JSON.stringify(obj, serializer(replacer, cycleReplacer), spaces)
+  }
+
+
 }))
 ;
