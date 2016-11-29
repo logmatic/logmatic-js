@@ -14,7 +14,7 @@
       logmatic.setIPTracking('client.IP'); // OPTIONAL resolve client IP and copy it @ 'client.IP'
       logmatic.setUserAgentTracking('client.user-agent'); // OPTIONAL resolve client IP and copy it @ 'client.user-agent'
       logmatic.setURLTracking('url'); // OPTIONAL resolve URL and copy it @ 'url'
-      logmatic.setBulkOptions({ lingerMs: 500, maxPostCount: 10, maxWaitingCount: -1 }) //Default setting - OPTIONAL modifications allowed
+      logmatic.setBulkOptions({ lingerMs: 500, maxPostCount: 10, maxWaitingCount: -1, maxContentSize: 200 * 1024 }) //Default setting - OPTIONAL modifications allowed
 
       function btnClicked () {
         logmatic.log('Button clicked', { name: 'My button name' });
