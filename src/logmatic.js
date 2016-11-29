@@ -137,23 +137,23 @@
 
   var trace = function (message, context) {
     log(message, context, "trace")
-  }
+  };
 
   var debug = function (message, context) {
     log(message, context, "debug")
-  }
+  };
 
   var info = function (message, context) {
     log(message, context, "info")
-  }
+  };
 
   var warn = function (message, context) {
     log(message, context, "warn")
-  }
+  };
 
   var error = function (message, context) {
     log(message, context, "error")
-  }
+  };
 
   var log = function (message, context, severity) {
     if (!_url) {
@@ -246,7 +246,7 @@
         if (item.length > _maxContentSize) {
           var newItem = {
             "severity": "warn",
-            "message": "Message dropped as its size exceeded the hard limit of 200 kBytes"
+            "message": "Message dropped as its size exceeded the hard limit of " + _maxContentSize + " kBytes"
           };
           assign(_metas, newItem);
 
@@ -254,7 +254,7 @@
             // Fatal! context is too big.
             newItem = {
               "severity": "error",
-              "message": "Message dropped because the context size provided exceeded the hard limit of 200 kBytes"
+              "message": "Message dropped because the context size provided exceeded the hard limit of " + _maxContentSize + " kBytes"
             };
 
           }
@@ -262,7 +262,6 @@
           // Provide at least the url
           newItem[_urlTrackingAttr] = window.location.href;
           item = JSON.stringify(newItem);
-        }
 
         // Unshift the element
         _queue.unshift(item);
