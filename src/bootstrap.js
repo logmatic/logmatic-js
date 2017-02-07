@@ -38,4 +38,4 @@
 
   document.getElementsByTagName('head')[0].appendChild(script);
 
-})(window, document, 'http://localhost:8000/dist/logmatic.js', {key: "mAQX5tuFQxGDyU5SVevBjA", appname: "awesome", disableConsole: true});
+})(window, document, 'http://localhost:8000/dist/logmatic.js', {key: "mAQX5tuFQxGDyU5SVevBjA", appname: "awesome"});

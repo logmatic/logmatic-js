@@ -2,81 +2,46 @@ var Logger = require("./logger");
 var Handlers = require("./handlers");
 var Hooks = require("./hooks");
 var LogmaticClient = require("./logmatic-client");
-var Utils = require("./utils");
-
 
 var LogmaticBuilder = function (opts) {
 
-  var _self =  {};
+  var _self = {};
 
   _self.config = {
-    url: "https://api.logmatic.io/v1/input/",
-    token: null,
-    consoleHandler: true,
-    errorHandler: true,
+    url: opts.url || "https://api.logmatic.io/v1/input/",
+    token: opts.key || null,
+    consoleHandler: opts.enableConsoleHandler || true,
+    errorHandler: opts.enableErrorHandler || true,
     context: {
-      "appname": null,
+      "appname": opts.appname || null,
       "@marker": ["logmatic-js", "front", "sourcecode"]
     },
     client: {
-      IPTracking: true,
-      UATracking: true
+      type: "logmatic",
+      IPTracking: opts.enableIPTracking || true,
+      UATracking: opts.enableUATracking || true
     }
   };
 
-  // Public methods
-  _self.init = function (token) {
-    _self.config.token = token;
-    return _self;
-  };
-
-  _self.withName = function (appname) {
-    _self.addField("appname", appname);
-    return _self;
-  };
-
-  _self.addField = function (key, value) {
-    _self.config.context[key] = value;
-    return _self;
-  };
-
-  _self.disableConsole = function () {
-    _self.config.consoleHandler = false;
-    return _self;
-  };
-
-  _self.disableErrorHandler = function () {
-    _self.config.errorHandler = false;
-    return _self;
-  };
-
-  _self.disableIPTracking = function () {
-    _self.config.client.IPTracking = false;
-    return _self;
-  };
-
-  _self.disableUATracking = function () {
-    _self.config.client.UATracking = false;
-    return _self;
-  };
-
-  _self.setCustomConfiguration = function (config) {
-    _self.config = Utils.assign(config, _self.config);
-    return _self;
-
-  };
-
-  if (_self.config.context["appname"] === null) {
+  if (window && window.location && _self.config.context["appname"] === null) {
     _self.addField("appname", window.location.hostname);
   }
 
-  // Init the client
+  var client = null;
   _self.config.endpoint = _self.config.url + _self.config.token;
-  var client = LogmaticClient(_self.config);
+  switch (_self.config.client.type) {
+    case "logmatic":
+      client = LogmaticClient(_self.config);
+      break;
+    default:
+      throw "You have to set a valid key for 'client.type'";
+  }
 
-  // Init the logger
-  var logger = Logger(client, _self.config.context);
-
+  // Init the client
+  var logger = Logger({
+    client: client,
+    context: _self.config.context
+  });
 
   if (_self.config.consoleHandler) {
     Handlers.consoleHandler(logger, {});
@@ -93,5 +58,7 @@ var LogmaticBuilder = function (opts) {
 };
 
 LogmaticBuilder.Hooks = Hooks;
+LogmaticBuilder.Handlers = Handlers;
+
 
 module.exports = LogmaticBuilder;

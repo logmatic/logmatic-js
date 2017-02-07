@@ -1,17 +1,16 @@
 var Utils = require("./utils");
 
-var Logger = function (client, context) {
+var Logger = function (opts) {
 
-    var _logger = {};
-
-
-    if (!client || !client.queue || !client.post) {
+    if (!opts || !opts.client || !opts.client.queue || !opts.client.post) {
       throw "Logger initialization failed, client not valid";
     }
 
-    var _client = client;
-    var _globalContext = context || {};
-    var _hooks = [];
+    var _logger = {};
+
+    var _client = opts.client;
+    var _globalContext = opts.client || {};
+    var _hooks = opts.hooks || [];
 
     _logger.addHook = function (callback, props) {
       _hooks.push({callback: callback, props: props || {}});
@@ -51,11 +50,6 @@ var Logger = function (client, context) {
         _logger.log(m, c)
       };
     });
-
-
-    _logger.setClient = function (client) {
-      _client = client
-    };
 
     _logger.flush = function () {
       _client.post()
