@@ -76,4 +76,4 @@ var LingerManager = function (lingerPeriodMs) {
 
 };
 
-export default LingerManager;
+module.exports = LingerManager;

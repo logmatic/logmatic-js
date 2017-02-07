@@ -355,7 +355,7 @@
         });
       } else {
         var oldhandler = window.onerror;
-        window.onerror = function (message, url, line, column) {
+        window.onerror = function (message, url, line, column, error) {
           var errorProperties = {};
           errorProperties[errorAttribute] = {
             mode: 'JSException',

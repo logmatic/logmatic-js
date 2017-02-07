@@ -1,6 +1,5 @@
-import LingerManager from "./linger";
-import Utils from "./utils";
-
+var LingerManager = require("./linger");
+var Utils = require("./utils");
 
 var client = function (config) {
 
@@ -53,17 +52,17 @@ var client = function (config) {
      handleExit(0);
      return;
      }
-     // Set metas
-     assign(_metas, event);
 
-     // URL tracking
-     if (_urlTrackingAttr) {
-     event[_urlTrackingAttr] = window.location.href;
-     }
      */
     var data = Utils.stringify(event);
     if (data.length > _maxContentSize) {
-      // element to big
+      var tooBig = {
+        "level": "error",
+        "message": "Message dropped as its size exceeded the hard limit of " + _maxContentSize + " kBytes",
+        "http.href": window.location.href,
+        "original_event": data.substring(0,100).replace(/"/g,"") + " ..."
+      };
+      data = Utils.stringify(tooBig);
     }
 
     _queue.push(data);
@@ -74,12 +73,6 @@ var client = function (config) {
     }
     _tryPost();
   };
-
-
-  var addHook = function (callback, properties) {
-    _hooks.push({callback: callback, props: properties || {}});
-  };
-
 
   // Send the data queued to the endpoint
   var post = function () {
@@ -171,4 +164,4 @@ var client = function (config) {
   }
 };
 
-export default client;
+module.exports = client;

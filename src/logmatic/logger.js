@@ -1,6 +1,6 @@
-import Utils from "./utils";
+var Utils = require("./utils");
 
-var logger = function (client, context) {
+var Logger = function (client, context) {
 
     var _logger = {};
 
@@ -18,12 +18,12 @@ var logger = function (client, context) {
     };
 
     _logger.addField = function (key, value) {
-      _context[key] = value;
+      _globalContext[key] = value;
     };
 
     _logger.removeField = function (key) {
-      if (_context.indexOf(key) !== -1) {
-        return e_context.splice(_context.indexOf(key), 1);
+      if (_globalContext.indexOf(key) !== -1) {
+        return _globalContext.splice(_globalContext.indexOf(key), 1);
       }
     };
 
@@ -67,4 +67,4 @@ var logger = function (client, context) {
   ;
 
 
-export default logger;
+module.exports = Logger;

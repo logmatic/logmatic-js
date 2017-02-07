@@ -1,12 +1,13 @@
-import LogmaticClient from "./logmatic-client";
-import Hooks from "./common-hooks";
-import Handlers from "./common-handlers";
-import Logger from "./logger";
-import Utils from "./utils";
+var Logger = require("./logger");
+var Handlers = require("./handlers");
+var Hooks = require("./hooks");
+var LogmaticClient = require("./logmatic-client");
+var Utils = require("./utils");
 
-var LogmaticBuilder = function () {
 
-  var _self = this || {};
+var LogmaticBuilder = function (opts) {
+
+  var _self =  {};
 
   _self.config = {
     url: "https://api.logmatic.io/v1/input/",
@@ -15,7 +16,7 @@ var LogmaticBuilder = function () {
     errorHandler: true,
     context: {
       "appname": null,
-      "@marker": ["logmatic-js", "front", "sourcecode", "access-log"]
+      "@marker": ["logmatic-js", "front", "sourcecode"]
     },
     client: {
       IPTracking: true,
@@ -64,40 +65,33 @@ var LogmaticBuilder = function () {
     return _self;
 
   };
-  // Do the stuff
-  _self.build = function () {
 
-    // Init the client
-    _self.config.endpoint = _self.config.url + _self.config.token;
-    var client = LogmaticClient(_self.config);
+  if (_self.config.context["appname"] === null) {
+    _self.addField("appname", window.location.hostname);
+  }
 
+  // Init the client
+  _self.config.endpoint = _self.config.url + _self.config.token;
+  var client = LogmaticClient(_self.config);
 
-    if (_self.config.context["appname"] === null) {
-      _self.addField("appname", window.location.origin);
-    }
-
-    // Init the logger
-    var logger = Logger(client, _self.config.context);
+  // Init the logger
+  var logger = Logger(client, _self.config.context);
 
 
-    if (_self.config.consoleHandler) {
-      Handlers.consoleHandler(logger, {});
-    }
-    if (_self.config.errorHandler) {
-      console.debug("errorHandler");
-      Handlers.errorHandler(logger, {});
-    }
+  if (_self.config.consoleHandler) {
+    Handlers.consoleHandler(logger, {});
+  }
+  if (_self.config.errorHandler) {
+    Handlers.errorHandler(logger, {});
+  }
 
-    // Register hooks
-    logger.addHook(Hooks.urlTracker);
-    logger.log("Navigated to " + window.location.href);
+  // Register hooks
+  logger.addHook(Hooks.urlTracker, {});
+  logger.log("Navigated to " + window.location.href);
 
-    return logger;
-
-  };
-
-  return _self;
+  return logger;
 };
 
-export default LogmaticBuilder;
+LogmaticBuilder.Hooks = Hooks;
 
+module.exports = LogmaticBuilder;

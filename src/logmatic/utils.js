@@ -1,5 +1,3 @@
-
-
 var assign = function (fromObject, toObject) {
   if (fromObject) {
     for (var key in fromObject) {
@@ -35,9 +33,7 @@ var stringify = function (obj, replacer, spaces, cycleReplacer) {
   return JSON.stringify(obj, serializer(replacer, cycleReplacer), spaces)
 };
 
-
-
-export default {
+module.exports = {
   assign: assign,
   stringify: stringify
-}
+};
