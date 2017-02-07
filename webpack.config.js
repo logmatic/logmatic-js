@@ -3,7 +3,7 @@ module.exports = [{
   output: {
     library: 'LogmaticBuilder',
     path: './dist',
-    filename: 'logmatic.js'
+    filename: 'logmatic-latest-build.js'
   },
   entry: {
     library: './src/logmatic/logmatic-builder.js'
