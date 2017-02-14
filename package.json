@@ -28,5 +28,8 @@
   },
   "scripts": {
     "build": "webpack -p"
+  },
+  "dependencies": {
+    "tracekit": "^0.4.4"
   }
 }
