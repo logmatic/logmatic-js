@@ -23,8 +23,7 @@
   script.type = 'text/javascript';
 
   script.onload = function () {
-    window.logmatic = window.LogmaticBuilder(opts)
-      .build();
+    window.logmatic = window.LogmaticBuilder(opts);
     for (var i = 0; i < hooks.length; i++) {
       window.logmatic.addHook.apply(window.logmatic, hooks[i]);
     }
