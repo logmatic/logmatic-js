@@ -7,11 +7,14 @@ var LogmaticBuilder = function (opts) {
 
   var _self = {};
 
+  opts = opts || {};
+
   _self.config = {
     url: opts.url || "https://api.logmatic.io/v1/input/",
     token: opts.key || null,
     consoleHandler: opts.enableConsoleHandler || true,
     errorHandler: opts.enableErrorHandler || true,
+    hooks: opts.hooks || [],
     context: {
       "appname": opts.appname || null,
       "@marker": ["logmatic-js", "front", "sourcecode"]
@@ -24,7 +27,7 @@ var LogmaticBuilder = function (opts) {
   };
 
   if (window && window.location && _self.config.context["appname"] === null) {
-    _self.addField("appname", window.location.hostname);
+    _self.config.context["appname"] = window.location.hostname;
   }
 
   var client = null;
@@ -50,8 +53,13 @@ var LogmaticBuilder = function (opts) {
     Handlers.errorHandler(logger, {});
   }
 
+  _self.config.hooks.push([Hooks.urlTracker, {}]);
+  _self.config.hooks.push([Hooks.timestamper, {}]);
+
   // Register hooks
-  logger.addHook(Hooks.urlTracker, {});
+  _self.config.hooks.forEach(function(h) {
+    logger.addHook(h[0], h[1]);
+  });
   logger.log("Navigated to " + window.location.href);
 
   return logger;
