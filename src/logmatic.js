@@ -9,7 +9,7 @@
 }(this, function () {
 
   var _url = 'https://api.logmatic.io/v1/input/';
-  var _metas;
+  var _metas = {};
   var _ipTrackingAttr;
   var _uaTrackingAttr;
   var _urlTrackingAttr;
