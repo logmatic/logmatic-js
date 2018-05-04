@@ -24,7 +24,7 @@
   var _queue = [];
   var _maxContentSize = 200 * 1024; // limit post to 200 KB
 
-  var _lingerManager = createLingerManager(_bulkLingerMs);
+  var _lingerManager = createLingerManager();
 
 
   function assign(fromObject, toObject) {
@@ -38,7 +38,7 @@
   }
 
 
-  function createLingerManager(lingerPeriodMs) {
+  function createLingerManager() {
 
     var manager = {};
     manager.MODE = {
@@ -54,7 +54,6 @@
     var _alarm = null;
     var _mode = manager.MODE.LINGER;
     var _backOffFactor = 0;
-    var _lingerPeriodMs = lingerPeriodMs;
 
 
     manager.reset = function () {
@@ -92,7 +91,7 @@
           break;
 
         case manager.MODE.LINGER:
-          timeMs = _lingerPeriodMs;
+          timeMs = _bulkLingerMs;
           break;
 
         case manager.MODE.ERROR:
