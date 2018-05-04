@@ -20,6 +20,11 @@
         logmatic.log('Button clicked', { name: 'My button name' });
       }
 
+      function btnFlushClicked () {
+        logmatic.log('Flushing');
+        logmatic.flush();
+      }
+
       function fireError () {
         foo();
       }
@@ -40,6 +45,11 @@
         console.info('This is a fake console.info!!');
         console.warn('This is a fake console.warn!!');
       }
+
+      window.onbeforeunload = function(e) {
+        logmatic.log('Unloading window');
+        logmatic.flush();
+      }
     </script>
   </head>
   <body>
@@ -48,5 +58,9 @@
     <button id="error" onclick="fireError()">Fire an error</button>
     <br>
     <button id="consolelog" onclick="consoleLog()">Write a console log</button>
+    <br>
+    <button id="sendlogWithFlush" onclick="btnFlushClicked()">Send one log with flush</button>
+    <br>
+    <a href="https://github.com/logmatic/logmatic-js">logmatic-js</a>
   </body>
 </html>

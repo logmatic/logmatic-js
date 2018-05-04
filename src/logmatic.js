@@ -171,6 +171,11 @@
     queue(payload);
   };
 
+  var flush = function() {
+    _lingerManager.reset();
+    post();
+  }
+
   var queue = function (payload) {
     // Set metas
     assign(_metas, payload);
@@ -422,7 +427,8 @@
     setIPTracking: setIPTracking,
     setUserAgentTracking: setUserAgentTracking,
     setURLTracking: setURLTracking,
-    setBulkOptions: setBulkOptions
+    setBulkOptions: setBulkOptions,
+    flush: flush
   };
 }))
 ;
